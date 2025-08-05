@@ -6,6 +6,12 @@ import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import AndroidIcon from "@mui/icons-material/Android";
+import AppleIcon from "@mui/icons-material/Apple";
+import ComputerIcon from "@mui/icons-material/Computer";
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
+import PetsIcon from "@mui/icons-material/Pets";
 import { useDevices } from "~/contexts/DeviceContext";
 import { EmulatorActionForm } from "~/components/EmulatorActionForm";
 
@@ -14,6 +20,23 @@ export function meta({ }: Route.MetaArgs) {
         { title: "EmuSync" },
         { name: "description", content: "Application for syncing emulation save games with the server or the device!" },
     ];
+}
+
+function getDeviceIcon(os: string) {
+    const osLower = os.toLowerCase();
+    if (osLower.includes('android')) {
+        return <AndroidIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+    } else if (osLower.includes('ios')) {
+        return <PhoneIphoneIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+    } else if (osLower.includes('windows')) {
+        return <DesktopWindowsIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+    } else if (osLower.includes('mac') || osLower.includes('darwin')) {
+        return <AppleIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+    } else if (osLower.includes('linux')) {
+        return <PetsIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+    } else {
+        return <ComputerIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+    }
 }
 
 export default function Home() {
@@ -49,9 +72,12 @@ export default function Home() {
                             }}
                         >
                             <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <Typography variant="h6" component="h3">
-                                    {device.name}
-                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                    {getDeviceIcon(device.os)}
+                                    <Typography variant="h6" component="h3">
+                                        {device.name}
+                                    </Typography>
+                                </Box>
                                 <Typography variant="body2" color="text.secondary">
                                     OS: {device.os}
                                 </Typography>
