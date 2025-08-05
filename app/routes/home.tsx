@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import type { Device } from "~/types/device";
 
 export function meta({ }: Route.MetaArgs) {
@@ -18,6 +20,7 @@ export default function Home() {
     const [devices, setDevices] = useState<Device[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchDevices = async () => {
@@ -58,8 +61,16 @@ export default function Home() {
             {!loading && !error && devices.length > 0 && (
                 <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
                     {devices.map((device) => (
-                        <Card key={device.name}>
-                            <CardContent>
+                        <Card 
+                            key={device.name}
+                            sx={{ 
+                                border: '2px solid',
+                                borderColor: selectedDevice === device.name ? 'primary.main' : 'transparent',
+                                display: 'flex',
+                                height: 'auto'
+                            }}
+                        >
+                            <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="h6" component="h3">
                                     {device.name}
                                 </Typography>
@@ -70,6 +81,18 @@ export default function Home() {
                                     Emulators Enabled: {device.emulatorsEnabled.join(", ")}
                                 </Typography>
                             </CardContent>
+                            <Button
+                                variant={selectedDevice === device.name ? "contained" : "outlined"}
+                                onClick={() => setSelectedDevice(selectedDevice === device.name ? null : device.name)}
+                                sx={{ 
+                                    minWidth: '60px',
+                                    borderRadius: 0,
+                                    borderTopLeftRadius: 0,
+                                    borderBottomLeftRadius: 0
+                                }}
+                            >
+                                <ArrowForwardIcon />
+                            </Button>
                         </Card>
                     ))}
                 </Box>
