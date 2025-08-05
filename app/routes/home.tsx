@@ -9,8 +9,8 @@ import type { Device } from "~/types/device";
 
 export function meta({ }: Route.MetaArgs) {
     return [
-        { title: "New React Router App" },
-        { name: "description", content: "Welcome to React Router!" },
+        { title: "EmuSync" },
+        { name: "description", content: "Application for syncing emulation save games with the server or the device!" },
     ];
 }
 
