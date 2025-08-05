@@ -11,7 +11,6 @@ interface DeviceContextType {
     setSelectedDevice: (deviceName: string | null) => void;
     emulatorActions: EmulatorActions;
     setEmulatorActions: (actions: EmulatorActions) => void;
-    refetchDevices: () => void;
 }
 
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
@@ -56,7 +55,6 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
         setSelectedDevice,
         emulatorActions,
         setEmulatorActions,
-        refetchDevices: fetchDevices,
     };
 
     return (
