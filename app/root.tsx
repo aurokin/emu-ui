@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { DeviceProvider } from "~/contexts/DeviceContext";
 import "~/app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -45,7 +46,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-    return <Outlet />;
+    return (
+        <DeviceProvider>
+            <Outlet />
+        </DeviceProvider>
+    );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

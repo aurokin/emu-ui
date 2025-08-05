@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -7,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import type { Device } from "~/types/device";
+import { useDevices } from "~/contexts/DeviceContext";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -17,29 +16,7 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Home() {
-    const [devices, setDevices] = useState<Device[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchDevices = async () => {
-            try {
-                const response = await fetch('/api/devices');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                setDevices(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to fetch devices');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDevices();
-    }, []);
+    const { devices, loading, error, selectedDevice, setSelectedDevice } = useDevices();
 
     return (
         <Box sx={{ padding: 2 }}>
@@ -61,9 +38,9 @@ export default function Home() {
             {!loading && !error && devices.length > 0 && (
                 <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
                     {devices.map((device) => (
-                        <Card 
+                        <Card
                             key={device.name}
-                            sx={{ 
+                            sx={{
                                 border: '2px solid',
                                 borderColor: selectedDevice === device.name ? 'primary.main' : 'transparent',
                                 display: 'flex',
@@ -84,7 +61,7 @@ export default function Home() {
                             <Button
                                 variant={selectedDevice === device.name ? "contained" : "outlined"}
                                 onClick={() => setSelectedDevice(selectedDevice === device.name ? null : device.name)}
-                                sx={{ 
+                                sx={{
                                     minWidth: '60px',
                                     borderRadius: 0,
                                     borderTopLeftRadius: 0,
