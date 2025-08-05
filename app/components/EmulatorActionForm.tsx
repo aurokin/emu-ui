@@ -44,7 +44,7 @@ export function EmulatorActionForm() {
             <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
                 Choose what action to perform for each emulator:
             </Typography>
-            
+
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {selectedDeviceData.emulatorsEnabled.map((emulator) => (
                     <FormControl key={emulator}>
