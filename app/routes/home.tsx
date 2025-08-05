@@ -5,18 +5,13 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
+import type { Device } from "~/types/device";
 
 export function meta({ }: Route.MetaArgs) {
     return [
         { title: "New React Router App" },
         { name: "description", content: "Welcome to React Router!" },
     ];
-}
-
-interface Device {
-    name: string;
-    os: string;
-    emulatorsEnabled: string[];
 }
 
 export default function Home() {
