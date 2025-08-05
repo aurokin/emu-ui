@@ -7,6 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDevices } from "~/contexts/DeviceContext";
+import { EmulatorActionForm } from "~/components/EmulatorActionForm";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -20,7 +21,7 @@ export default function Home() {
 
     return (
         <Box sx={{ padding: 2 }}>
-            <Typography variant="h1" gutterBottom>Home</Typography>
+            <Typography variant="h1" gutterBottom>EmuSync</Typography>
             <Typography variant="h2" gutterBottom>Devices</Typography>
 
             {loading && <CircularProgress />}
@@ -74,6 +75,8 @@ export default function Home() {
                     ))}
                 </Box>
             )}
+
+            <EmulatorActionForm />
         </Box>
     );
 }

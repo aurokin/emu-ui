@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { Device } from "~/types/device";
+import type { EmulatorActions } from "~/types/emulatorAction";
 
 interface DeviceContextType {
     devices: Device[];
@@ -8,6 +9,8 @@ interface DeviceContextType {
     error: string | null;
     selectedDevice: string | null;
     setSelectedDevice: (deviceName: string | null) => void;
+    emulatorActions: EmulatorActions;
+    setEmulatorActions: (actions: EmulatorActions) => void;
     refetchDevices: () => void;
 }
 
@@ -22,6 +25,7 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+    const [emulatorActions, setEmulatorActions] = useState<EmulatorActions>({});
 
     const fetchDevices = async () => {
         try {
@@ -50,6 +54,8 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
         error,
         selectedDevice,
         setSelectedDevice,
+        emulatorActions,
+        setEmulatorActions,
         refetchDevices: fetchDevices,
     };
 
