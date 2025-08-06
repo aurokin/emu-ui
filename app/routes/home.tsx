@@ -15,6 +15,10 @@ import PetsIcon from "@mui/icons-material/Pets";
 import { useDevices } from "~/contexts/DeviceContext";
 import { EmulatorActionForm } from "~/components/EmulatorActionForm";
 
+function capitalize(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export function meta({}: Route.MetaArgs) {
     return [
         { title: "EmuSync" },
@@ -116,7 +120,7 @@ export default function Home() {
                                     variant="body2"
                                     color="text.secondary"
                                 >
-                                    OS: {device.os.charAt(0).toUpperCase() + device.os.slice(1)}
+                                    OS: {capitalize(device.os)}
                                 </Typography>
                                 <Typography
                                     variant="body2"
@@ -124,11 +128,7 @@ export default function Home() {
                                 >
                                     Emulators Enabled:{" "}
                                     {device.emulatorsEnabled
-                                        .map(
-                                            (e) =>
-                                                e.charAt(0).toUpperCase() +
-                                                e.slice(1),
-                                        )
+                                        .map(capitalize)
                                         .join(", ")}
                                 </Typography>
                             </CardContent>
