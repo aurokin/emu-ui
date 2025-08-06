@@ -30,14 +30,16 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch('/api/devices');
+            const response = await fetch("/api/devices");
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             setDevices(data);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch devices');
+            setError(
+                err instanceof Error ? err.message : "Failed to fetch devices",
+            );
         } finally {
             setLoading(false);
         }
@@ -67,7 +69,7 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
 export function useDevices() {
     const context = useContext(DeviceContext);
     if (context === undefined) {
-        throw new Error('useDevices must be used within a DeviceProvider');
+        throw new Error("useDevices must be used within a DeviceProvider");
     }
     return context;
 }

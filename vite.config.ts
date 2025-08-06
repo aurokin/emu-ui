@@ -7,11 +7,11 @@ export default defineConfig({
     plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
     server: {
         proxy: {
-            '/api': {
-                target: 'http://192.168.50.11:3000',
+            "/api": {
+                target: "http://192.168.50.11:3000",
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, '')
-            }
-        }
-    }
+                rewrite: (path) => path.replace(/^\/api/, ""),
+            },
+        },
+    },
 });

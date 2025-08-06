@@ -15,37 +15,48 @@ import PetsIcon from "@mui/icons-material/Pets";
 import { useDevices } from "~/contexts/DeviceContext";
 import { EmulatorActionForm } from "~/components/EmulatorActionForm";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({}: Route.MetaArgs) {
     return [
         { title: "EmuSync" },
-        { name: "description", content: "Application for syncing emulation save games with the server or the device!" },
+        {
+            name: "description",
+            content:
+                "Application for syncing emulation save games with the server or the device!",
+        },
     ];
 }
 
 function getDeviceIcon(os: string) {
     const osLower = os.toLowerCase();
-    if (osLower.includes('android')) {
-        return <AndroidIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
-    } else if (osLower.includes('ios')) {
-        return <PhoneIphoneIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
-    } else if (osLower.includes('windows')) {
-        return <DesktopWindowsIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
-    } else if (osLower.includes('mac') || osLower.includes('darwin')) {
-        return <AppleIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
-    } else if (osLower.includes('linux')) {
-        return <PetsIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+    if (osLower.includes("android")) {
+        return <AndroidIcon sx={{ fontSize: 24, color: "primary.main" }} />;
+    } else if (osLower.includes("ios")) {
+        return <PhoneIphoneIcon sx={{ fontSize: 24, color: "primary.main" }} />;
+    } else if (osLower.includes("windows")) {
+        return (
+            <DesktopWindowsIcon sx={{ fontSize: 24, color: "primary.main" }} />
+        );
+    } else if (osLower.includes("mac") || osLower.includes("darwin")) {
+        return <AppleIcon sx={{ fontSize: 24, color: "primary.main" }} />;
+    } else if (osLower.includes("linux")) {
+        return <PetsIcon sx={{ fontSize: 24, color: "primary.main" }} />;
     } else {
-        return <ComputerIcon sx={{ fontSize: 24, color: 'primary.main' }} />;
+        return <ComputerIcon sx={{ fontSize: 24, color: "primary.main" }} />;
     }
 }
 
 export default function Home() {
-    const { devices, loading, error, selectedDevice, setSelectedDevice } = useDevices();
+    const { devices, loading, error, selectedDevice, setSelectedDevice } =
+        useDevices();
 
     return (
         <Box sx={{ padding: 2 }}>
-            <Typography variant="h1" gutterBottom>EmuSync</Typography>
-            <Typography variant="h2" gutterBottom>Devices</Typography>
+            <Typography variant="h1" gutterBottom>
+                EmuSync
+            </Typography>
+            <Typography variant="h2" gutterBottom>
+                Devices
+            </Typography>
 
             {loading && <CircularProgress />}
 
@@ -60,39 +71,85 @@ export default function Home() {
             )}
 
             {!loading && !error && devices.length > 0 && (
-                <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+                <Box
+                    sx={{
+                        display: "grid",
+                        gap: 2,
+                        gridTemplateColumns:
+                            "repeat(auto-fill, minmax(300px, 1fr))",
+                    }}
+                >
                     {devices.map((device) => (
                         <Card
                             key={device.name}
                             sx={{
-                                border: '2px solid',
-                                borderColor: selectedDevice === device.name ? 'primary.main' : 'transparent',
-                                display: 'flex',
-                                height: 'auto'
+                                border: "2px solid",
+                                borderColor:
+                                    selectedDevice === device.name
+                                        ? "primary.main"
+                                        : "transparent",
+                                display: "flex",
+                                height: "auto",
                             }}
                         >
-                            <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                            <CardContent
+                                sx={{
+                                    flex: 1,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                        mb: 1,
+                                    }}
+                                >
                                     {getDeviceIcon(device.os)}
                                     <Typography variant="h6" component="h3">
                                         {device.name}
                                     </Typography>
                                 </Box>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
                                     OS: {device.os}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Emulators Enabled: {device.emulatorsEnabled.join(", ")}
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    Emulators Enabled:{" "}
+                                    {device.emulatorsEnabled
+                                        .map(
+                                            (e) =>
+                                                e.charAt(0).toUpperCase() +
+                                                e.slice(1),
+                                        )
+                                        .join(", ")}
                                 </Typography>
                             </CardContent>
                             <Button
-                                variant={selectedDevice === device.name ? "contained" : "outlined"}
-                                onClick={() => setSelectedDevice(selectedDevice === device.name ? null : device.name)}
+                                variant={
+                                    selectedDevice === device.name
+                                        ? "contained"
+                                        : "outlined"
+                                }
+                                onClick={() =>
+                                    setSelectedDevice(
+                                        selectedDevice === device.name
+                                            ? null
+                                            : device.name,
+                                    )
+                                }
                                 sx={{
-                                    minWidth: '60px',
+                                    minWidth: "60px",
                                     borderRadius: 0,
                                     borderTopLeftRadius: 0,
-                                    borderBottomLeftRadius: 0
+                                    borderBottomLeftRadius: 0,
                                 }}
                             >
                                 <ArrowForwardIcon />

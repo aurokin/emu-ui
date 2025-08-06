@@ -11,15 +11,18 @@ import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
 
 export function EmulatorActionForm() {
-    const { devices, selectedDevice, emulatorActions, setEmulatorActions } = useDevices();
+    const { devices, selectedDevice, emulatorActions, setEmulatorActions } =
+        useDevices();
 
-    const selectedDeviceData = devices.find(device => device.name === selectedDevice);
+    const selectedDeviceData = devices.find(
+        (device) => device.name === selectedDevice,
+    );
 
     useEffect(() => {
         if (selectedDeviceData) {
             const defaultActions: { [key: string]: EmulatorAction } = {};
-            selectedDeviceData.emulatorsEnabled.forEach(emulator => {
-                defaultActions[emulator] = 'ignore';
+            selectedDeviceData.emulatorsEnabled.forEach((emulator) => {
+                defaultActions[emulator] = "ignore";
             });
             setEmulatorActions(defaultActions);
         }
@@ -32,7 +35,7 @@ export function EmulatorActionForm() {
     const handleActionChange = (emulator: string, action: EmulatorAction) => {
         setEmulatorActions({
             ...emulatorActions,
-            [emulator]: action
+            [emulator]: action,
         });
     };
 
@@ -41,18 +44,27 @@ export function EmulatorActionForm() {
             <Typography variant="h5" gutterBottom>
                 Emulator Actions for {selectedDeviceData.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ marginBottom: 2 }}
+            >
                 Choose what action to perform for each emulator:
             </Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {selectedDeviceData.emulatorsEnabled.map((emulator) => (
                     <FormControl key={emulator}>
                         <FormLabel component="legend">{emulator}</FormLabel>
                         <RadioGroup
                             row
-                            value={emulatorActions[emulator] || 'ignore'}
-                            onChange={(e) => handleActionChange(emulator, e.target.value as EmulatorAction)}
+                            value={emulatorActions[emulator] || "ignore"}
+                            onChange={(e) =>
+                                handleActionChange(
+                                    emulator,
+                                    e.target.value as EmulatorAction,
+                                )
+                            }
                         >
                             <FormControlLabel
                                 value="ignore"
