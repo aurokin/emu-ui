@@ -116,7 +116,7 @@ export default function Home() {
                                     variant="body2"
                                     color="text.secondary"
                                 >
-                                    OS: {device.os}
+                                    OS: {device.os.charAt(0).toUpperCase() + device.os.slice(1)}
                                 </Typography>
                                 <Typography
                                     variant="body2"
