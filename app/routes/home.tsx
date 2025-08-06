@@ -14,10 +14,7 @@ import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
 import PetsIcon from "@mui/icons-material/Pets";
 import { useDevices } from "~/contexts/DeviceContext";
 import { EmulatorActionForm } from "~/components/EmulatorActionForm";
-
-function capitalize(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
+import { capitalize } from "~/utilities/utils";
 
 export function meta({}: Route.MetaArgs) {
     return [
