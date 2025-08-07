@@ -10,6 +10,7 @@ import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
+import { capitalize } from "~/utilities/utils";
 
 export function EmulatorActionForm() {
     const { devices, selectedDevice, emulatorActions, setEmulatorActions } =
@@ -58,7 +59,7 @@ export function EmulatorActionForm() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {selectedDeviceData.emulatorsEnabled.map((emulator) => (
                     <FormControl key={emulator}>
-                        <FormLabel component="legend">{emulator}</FormLabel>
+                        <FormLabel component="legend">{capitalize(emulator)}</FormLabel>
                         <RadioGroup
                             row
                             value={emulatorActions[emulator] || "ignore"}
