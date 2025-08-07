@@ -8,6 +8,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
+import Button from "@mui/material/Button";
 import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
 import { capitalize } from "~/utilities/utils";
@@ -88,6 +89,29 @@ export function EmulatorActionForm() {
                         </RadioGroup>
                     </FormControl>
                 ))}
+            </Box>
+
+            <Divider sx={{ my: 3 }} />
+
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={
+                        !selectedDeviceData.emulatorsEnabled.some(
+                            (emu) =>
+                                emulatorActions[emu] === "push" ||
+                                emulatorActions[emu] === "pull",
+                        )
+                    }
+                    onClick={() => {
+                        // For now, just log the actions
+                        // eslint-disable-next-line no-console
+                        console.log("Submitting emulator actions", emulatorActions);
+                    }}
+                >
+                    Submit
+                </Button>
             </Box>
         </Paper>
     );

@@ -6,7 +6,6 @@ import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-// Removed system icon as we no longer support system theme
 import { alpha } from "@mui/material/styles";
 import { Logo } from "~/components/Logo";
 import Menu from "@mui/material/Menu";
@@ -51,18 +50,6 @@ export function Header() {
                     </Tooltip>
                     <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
                         <MenuItem
-                            selected={paletteName === "emeraldSlate"}
-                            onClick={() => {
-                                changePalette("emeraldSlate");
-                                handleClose();
-                            }}
-                        >
-                            <ListItemIcon>
-                                <CircleIcon sx={{ color: "#10B981" }} />
-                            </ListItemIcon>
-                            <ListItemText primary="Emerald + Slate" />
-                        </MenuItem>
-                        <MenuItem
                             selected={paletteName === "indigoCyan"}
                             onClick={() => {
                                 changePalette("indigoCyan");
@@ -73,6 +60,18 @@ export function Header() {
                                 <CircleIcon sx={{ color: "#6366F1" }} />
                             </ListItemIcon>
                             <ListItemText primary="Indigo + Cyan" />
+                        </MenuItem>
+                        <MenuItem
+                            selected={paletteName === "emeraldSlate"}
+                            onClick={() => {
+                                changePalette("emeraldSlate");
+                                handleClose();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <CircleIcon sx={{ color: "#10B981" }} />
+                            </ListItemIcon>
+                            <ListItemText primary="Emerald + Slate" />
                         </MenuItem>
                         <MenuItem
                             selected={paletteName === "amberRose"}
