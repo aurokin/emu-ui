@@ -26,7 +26,7 @@ export function Logo({ size = 28 }: { size?: number }) {
                 height="20"
                 rx="6"
                 fill="url(#emuGradient)"
-                opacity={0.22}
+                opacity={0.50}
             />
             <g stroke="url(#emuGradient)" strokeWidth="2.8" strokeLinecap="round" fill="none">
                 <path d="M8 7.5 L8 16.5" />
