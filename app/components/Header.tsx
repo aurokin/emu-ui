@@ -6,7 +6,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import ComputerIcon from "@mui/icons-material/Computer";
+// Removed system icon as we no longer support system theme
 import { alpha } from "@mui/material/styles";
 import { Logo } from "~/components/Logo";
 import Menu from "@mui/material/Menu";
@@ -19,19 +19,9 @@ import { useState } from "react";
 import { useThemeSettings } from "~/theme/ThemeProvider";
 export function Header() {
     const { themeMode, cycleThemeMode, paletteName, changePalette } = useThemeSettings();
-    const label =
-        themeMode === "system"
-            ? "Theme: System"
-            : themeMode === "light"
-              ? "Theme: Light"
-              : "Theme: Dark";
+    const label = themeMode === "light" ? "Theme: Light" : "Theme: Dark";
 
-    const Icon =
-        themeMode === "system"
-            ? ComputerIcon
-            : themeMode === "light"
-              ? LightModeIcon
-              : DarkModeIcon;
+    const Icon = themeMode === "light" ? LightModeIcon : DarkModeIcon;
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);

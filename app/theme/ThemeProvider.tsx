@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { CssBaseline, useMediaQuery } from "@mui/material";
+import { CssBaseline } from "@mui/material";
 import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 
-export type ThemeMode = "system" | "light" | "dark";
+export type ThemeMode = "light" | "dark";
 export type PaletteName = "indigoCyan" | "emeraldSlate" | "amberRose";
 
 type ThemeSettings = {
@@ -24,12 +24,10 @@ export function useThemeSettings(): ThemeSettings {
 }
 
 export function ThemeSettingsProvider({ children }: { children: React.ReactNode }) {
-  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
-
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "system";
+    if (typeof window === "undefined") return "dark";
     const stored = window.localStorage.getItem("themeMode");
-    return (stored as ThemeMode) || "system";
+    return stored === "light" || stored === "dark" ? (stored as ThemeMode) : "dark";
   });
 
   const [paletteName, setPaletteName] = useState<PaletteName>(() => {
@@ -50,10 +48,8 @@ export function ThemeSettingsProvider({ children }: { children: React.ReactNode 
     } catch {}
   }, [paletteName]);
 
-  const effectiveMode = themeMode === "system" ? (prefersDark ? "dark" : "light") : themeMode;
-
   const theme = useMemo(() => {
-    const effectiveModeLocal = effectiveMode;
+    const effectiveModeLocal = themeMode;
 
     const palettes = {
       indigoCyan: {
@@ -130,10 +126,9 @@ export function ThemeSettingsProvider({ children }: { children: React.ReactNode 
         },
       },
     });
-  }, [effectiveMode, paletteName]);
+  }, [themeMode, paletteName]);
 
-  const cycleThemeMode = () =>
-    setThemeMode((prev) => (prev === "system" ? "light" : prev === "light" ? "dark" : "system"));
+  const cycleThemeMode = () => setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
   const changePalette = (name: PaletteName) => setPaletteName(name);
 
   return (
@@ -147,4 +142,3 @@ export function ThemeSettingsProvider({ children }: { children: React.ReactNode 
     </ThemeSettingsContext.Provider>
   );
 }
-
