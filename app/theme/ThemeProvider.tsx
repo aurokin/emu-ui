@@ -1,6 +1,15 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 import { CssBaseline } from "@mui/material";
-import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
+import {
+    ThemeProvider as MuiThemeProvider,
+    createTheme,
+} from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 
 export type ThemeMode = "light" | "dark";
@@ -15,37 +24,55 @@ type ThemeSettings = {
     changePalette: (name: PaletteName) => void;
 };
 
-const ThemeSettingsContext = createContext<ThemeSettings | undefined>(undefined);
+const ThemeSettingsContext = createContext<ThemeSettings | undefined>(
+    undefined,
+);
 
 export function useThemeSettings(): ThemeSettings {
     const ctx = useContext(ThemeSettingsContext);
-    if (!ctx) throw new Error("useThemeSettings must be used within ThemeSettingsProvider");
+    if (!ctx)
+        throw new Error(
+            "useThemeSettings must be used within ThemeSettingsProvider",
+        );
     return ctx;
 }
 
-export function ThemeSettingsProvider({ children }: { children: React.ReactNode }) {
+export function ThemeSettingsProvider({
+    children,
+    initialThemeMode,
+    initialPaletteName,
+}: {
+    children: React.ReactNode;
+    initialThemeMode?: ThemeMode;
+    initialPaletteName?: PaletteName;
+}) {
     const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
-        if (typeof window === "undefined") return "dark";
+        if (typeof window === "undefined") return initialThemeMode ?? "dark";
         const stored = window.localStorage.getItem("themeMode");
-        return stored === "light" || stored === "dark" ? (stored as ThemeMode) : "dark";
+        return stored === "light" || stored === "dark"
+            ? (stored as ThemeMode)
+            : (initialThemeMode ?? "dark");
     });
 
     const [paletteName, setPaletteName] = useState<PaletteName>(() => {
-        if (typeof window === "undefined") return "emeraldSlate";
+        if (typeof window === "undefined")
+            return initialPaletteName ?? "emeraldSlate";
         const stored = window.localStorage.getItem("paletteName");
-        return (stored as PaletteName) || "indigoCyan";
+        return (stored as PaletteName) || initialPaletteName || "emeraldSlate";
     });
 
     useEffect(() => {
         try {
             window.localStorage.setItem("themeMode", themeMode);
-        } catch { }
+            document.cookie = `themeMode=${themeMode}; Path=/; Max-Age=31536000`;
+        } catch {}
     }, [themeMode]);
 
     useEffect(() => {
         try {
             window.localStorage.setItem("paletteName", paletteName);
-        } catch { }
+            document.cookie = `paletteName=${paletteName}; Path=/; Max-Age=31536000`;
+        } catch {}
     }, [paletteName]);
 
     const theme = useMemo(() => {
@@ -54,21 +81,35 @@ export function ThemeSettingsProvider({ children }: { children: React.ReactNode 
         const palettes = {
             indigoCyan: {
                 primary: { main: "#6366F1", light: "#A5B4FC", dark: "#4F46E5" },
-                secondary: { main: "#06B6D4", light: "#67E8F9", dark: "#0891B2" },
+                secondary: {
+                    main: "#06B6D4",
+                    light: "#67E8F9",
+                    dark: "#0891B2",
+                },
             },
             emeraldSlate: {
                 primary: { main: "#10B981", light: "#6EE7B7", dark: "#059669" },
-                secondary: { main: "#64748B", light: "#94A3B8", dark: "#475569" },
+                secondary: {
+                    main: "#64748B",
+                    light: "#94A3B8",
+                    dark: "#475569",
+                },
             },
             amberRose: {
                 primary: { main: "#F59E0B", light: "#FCD34D", dark: "#D97706" },
-                secondary: { main: "#F43F5E", light: "#FDA4AF", dark: "#E11D48" },
+                secondary: {
+                    main: "#F43F5E",
+                    light: "#FDA4AF",
+                    dark: "#E11D48",
+                },
             },
         } as const;
 
         const chosen = palettes[paletteName];
-        const backgroundDefault = effectiveModeLocal === "dark" ? "#0b1020" : "#f8fafc";
-        const backgroundPaper = effectiveModeLocal === "dark" ? "#0f172a" : "#ffffff";
+        const backgroundDefault =
+            effectiveModeLocal === "dark" ? "#0b1020" : "#f8fafc";
+        const backgroundPaper =
+            effectiveModeLocal === "dark" ? "#0f172a" : "#ffffff";
 
         return createTheme({
             cssVariables: true,
@@ -102,7 +143,8 @@ export function ThemeSettingsProvider({ children }: { children: React.ReactNode 
                 MuiCard: {
                     styleOverrides: {
                         root: {
-                            transition: "transform .15s ease, box-shadow .2s ease",
+                            transition:
+                                "transform .15s ease, box-shadow .2s ease",
                             backgroundColor: alpha(backgroundPaper, 0.6),
                             backdropFilter: "saturate(160%) blur(8px)",
                             WebkitBackdropFilter: "saturate(160%) blur(8px)",
@@ -128,12 +170,20 @@ export function ThemeSettingsProvider({ children }: { children: React.ReactNode 
         });
     }, [themeMode, paletteName]);
 
-    const cycleThemeMode = () => setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
+    const cycleThemeMode = () =>
+        setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
     const changePalette = (name: PaletteName) => setPaletteName(name);
 
     return (
         <ThemeSettingsContext.Provider
-            value={{ themeMode, cycleThemeMode, setThemeMode, paletteName, setPaletteName, changePalette }}
+            value={{
+                themeMode,
+                cycleThemeMode,
+                setThemeMode,
+                paletteName,
+                setPaletteName,
+                changePalette,
+            }}
         >
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />

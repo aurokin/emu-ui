@@ -47,11 +47,7 @@ export function EmulatorActionForm() {
             <Typography variant="h5" gutterBottom>
                 Emulator Actions for {selectedDeviceData.name}
             </Typography>
-            <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ mb: 2 }}
-            >
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Choose what action to perform for each emulator:
             </Typography>
 
@@ -60,7 +56,9 @@ export function EmulatorActionForm() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {selectedDeviceData.emulatorsEnabled.map((emulator) => (
                     <FormControl key={emulator}>
-                        <FormLabel component="legend">{capitalize(emulator)}</FormLabel>
+                        <FormLabel component="legend">
+                            {capitalize(emulator)}
+                        </FormLabel>
                         <RadioGroup
                             row
                             value={emulatorActions[emulator] || "ignore"}
@@ -107,7 +105,10 @@ export function EmulatorActionForm() {
                     onClick={() => {
                         // For now, just log the actions
                         // eslint-disable-next-line no-console
-                        console.log("Submitting emulator actions", emulatorActions);
+                        console.log(
+                            "Submitting emulator actions",
+                            emulatorActions,
+                        );
                     }}
                 >
                     Submit

@@ -5,13 +5,17 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
+    useLoaderData,
 } from "react-router";
 import { Header } from "~/components/Header";
-
-import type { Route } from "./+types/root";
 import { DeviceProvider } from "~/contexts/DeviceContext";
 import "~/app.css";
-import { ThemeSettingsProvider } from "~/theme/ThemeProvider";
+import {
+    ThemeSettingsProvider,
+    type ThemeMode,
+    type PaletteName,
+} from "~/theme/ThemeProvider";
+import type { Route } from "./+types/root";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,9 +51,36 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
+export async function loader({ request }: Route.LoaderArgs) {
+    const cookie = request.headers.get("cookie") || "";
+    const get = (name: string) =>
+        cookie
+            .split(/;\s*/)
+            .map((p) => p.split("="))
+            .find(([k]) => k === name)?.[1];
+    const themeFromCookie = get("themeMode");
+    const paletteFromCookie = get("paletteName");
+    const initialThemeMode: ThemeMode | undefined =
+        themeFromCookie === "light" || themeFromCookie === "dark"
+            ? (themeFromCookie as ThemeMode)
+            : undefined;
+    const initialPaletteName: PaletteName | undefined =
+        paletteFromCookie === "indigoCyan" ||
+        paletteFromCookie === "emeraldSlate" ||
+        paletteFromCookie === "amberRose"
+            ? (paletteFromCookie as PaletteName)
+            : undefined;
+    return { initialThemeMode, initialPaletteName };
+}
+
 export default function App() {
+    const { initialThemeMode, initialPaletteName } =
+        useLoaderData<typeof loader>();
     return (
-        <ThemeSettingsProvider>
+        <ThemeSettingsProvider
+            initialThemeMode={initialThemeMode}
+            initialPaletteName={initialPaletteName}
+        >
             <DeviceProvider>
                 <Header />
                 <Outlet />

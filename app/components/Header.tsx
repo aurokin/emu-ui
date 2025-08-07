@@ -17,7 +17,8 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { useState } from "react";
 import { useThemeSettings } from "~/theme/ThemeProvider";
 export function Header() {
-    const { themeMode, cycleThemeMode, paletteName, changePalette } = useThemeSettings();
+    const { themeMode, cycleThemeMode, paletteName, changePalette } =
+        useThemeSettings();
     const label = themeMode === "light" ? "Theme: Light" : "Theme: Dark";
 
     const Icon = themeMode === "light" ? LightModeIcon : DarkModeIcon;
@@ -25,11 +26,15 @@ export function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
-    const handleOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
+    const handleOpen = (e: React.MouseEvent<HTMLElement>) =>
+        setAnchorEl(e.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
     return (
-        <AppBar position="sticky" color="transparent" elevation={0}
+        <AppBar
+            position="sticky"
+            color="transparent"
+            elevation={0}
             sx={(theme) => ({
                 backdropFilter: "saturate(180%) blur(10px)",
                 WebkitBackdropFilter: "saturate(180%) blur(10px)",
@@ -38,13 +43,23 @@ export function Header() {
             })}
         >
             <Toolbar disableGutters>
-                <Container maxWidth="lg" sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Box aria-label="EmuSync" sx={{ display: "flex", alignItems: "center" }}>
+                <Container
+                    maxWidth="lg"
+                    sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                >
+                    <Box
+                        aria-label="EmuSync"
+                        sx={{ display: "flex", alignItems: "center" }}
+                    >
                         <Logo size={32} />
                     </Box>
                     <Box sx={{ flexGrow: 1 }} />
                     <Tooltip title={`Palette: ${paletteName}`}>
-                        <IconButton color="inherit" aria-label="Choose palette" onClick={handleOpen}>
+                        <IconButton
+                            color="inherit"
+                            aria-label="Choose palette"
+                            onClick={handleOpen}
+                        >
                             <PaletteIcon />
                         </IconButton>
                     </Tooltip>
@@ -87,7 +102,11 @@ export function Header() {
                         </MenuItem>
                     </Menu>
                     <Tooltip title={`${label} — click to change`}>
-                        <IconButton color="inherit" onClick={cycleThemeMode} aria-label="Toggle theme mode">
+                        <IconButton
+                            color="inherit"
+                            onClick={cycleThemeMode}
+                            aria-label="Toggle theme mode"
+                        >
                             <Icon />
                         </IconButton>
                     </Tooltip>

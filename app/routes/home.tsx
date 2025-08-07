@@ -111,7 +111,9 @@ export default function Home() {
                                         ? "primary.main"
                                         : "divider",
                                     overflow: "hidden",
-                                    '&:hover': { transform: "translateY(-2px)" },
+                                    "&:hover": {
+                                        transform: "translateY(-2px)",
+                                    },
                                 }}
                             >
                                 <CardActionArea
@@ -147,15 +149,17 @@ export default function Home() {
                                             spacing={1}
                                             sx={{ mt: 1, flexWrap: "wrap" }}
                                         >
-                                            {device.emulatorsEnabled.map((e) => (
-                                                <Chip
-                                                    key={e}
-                                                    size="small"
-                                                    label={capitalize(e)}
-                                                    color="secondary"
-                                                    variant="outlined"
-                                                />
-                                            ))}
+                                            {device.emulatorsEnabled.map(
+                                                (e) => (
+                                                    <Chip
+                                                        key={e}
+                                                        size="small"
+                                                        label={capitalize(e)}
+                                                        color="secondary"
+                                                        variant="outlined"
+                                                    />
+                                                ),
+                                            )}
                                         </Stack>
                                     </CardContent>
                                 </CardActionArea>
@@ -169,7 +173,9 @@ export default function Home() {
                                     <Button
                                         size="small"
                                         variant={
-                                            isSelected ? "contained" : "outlined"
+                                            isSelected
+                                                ? "contained"
+                                                : "outlined"
                                         }
                                         endIcon={<ArrowForwardIcon />}
                                         onClick={(e) => {
