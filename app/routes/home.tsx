@@ -3,8 +3,12 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import CardActionArea from "@mui/material/CardActionArea";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AndroidIcon from "@mui/icons-material/Android";
 import AppleIcon from "@mui/icons-material/Apple";
@@ -51,13 +55,26 @@ export default function Home() {
         useDevices();
 
     return (
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h1" gutterBottom>
-                EmuSync
-            </Typography>
-            <Typography variant="h2" gutterBottom>
-                Devices
-            </Typography>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Box sx={{ mb: 4 }}>
+                <Typography
+                    variant="h3"
+                    sx={{
+                        fontWeight: 800,
+                        letterSpacing: -0.5,
+                        background: (theme) =>
+                            `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                        WebkitBackgroundClip: "text",
+                        backgroundClip: "text",
+                        color: "transparent",
+                    }}
+                >
+                    EmuSync
+                </Typography>
+                <Typography color="text.secondary">
+                    Select a device to manage emulator sync actions.
+                </Typography>
+            </Box>
 
             {loading && <CircularProgress />}
 
@@ -75,88 +92,103 @@ export default function Home() {
                 <Box
                     sx={{
                         display: "grid",
-                        gap: 2,
+                        gap: 2.5,
                         gridTemplateColumns:
-                            "repeat(auto-fill, minmax(300px, 1fr))",
+                            "repeat(auto-fill, minmax(320px, 1fr))",
                     }}
                 >
-                    {devices.map((device) => (
-                        <Card
-                            key={device.name}
-                            sx={{
-                                border: "2px solid",
-                                borderColor:
-                                    selectedDevice === device.name
-                                        ? "primary.main"
-                                        : "transparent",
-                                display: "flex",
-                                height: "auto",
-                            }}
-                        >
-                            <CardContent
+                    {devices.map((device) => {
+                        const isSelected = selectedDevice === device.name;
+                        return (
+                            <Card
+                                key={device.name}
                                 sx={{
-                                    flex: 1,
-                                    display: "flex",
-                                    flexDirection: "column",
+                                    position: "relative",
+                                    border: isSelected
+                                        ? "2px solid"
+                                        : "1px solid",
+                                    borderColor: isSelected
+                                        ? "primary.main"
+                                        : "divider",
+                                    overflow: "hidden",
+                                    '&:hover': { transform: "translateY(-2px)" },
                                 }}
                             >
+                                <CardActionArea
+                                    onClick={() =>
+                                        setSelectedDevice(
+                                            isSelected ? null : device.name,
+                                        )
+                                    }
+                                >
+                                    <CardContent>
+                                        <Stack
+                                            direction="row"
+                                            alignItems="center"
+                                            spacing={1}
+                                            sx={{ mb: 1 }}
+                                        >
+                                            {getDeviceIcon(device.os)}
+                                            <Typography
+                                                variant="h6"
+                                                component="h3"
+                                            >
+                                                {device.name}
+                                            </Typography>
+                                        </Stack>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            OS: {capitalize(device.os)}
+                                        </Typography>
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            sx={{ mt: 1, flexWrap: "wrap" }}
+                                        >
+                                            {device.emulatorsEnabled.map((e) => (
+                                                <Chip
+                                                    key={e}
+                                                    size="small"
+                                                    label={capitalize(e)}
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                />
+                                            ))}
+                                        </Stack>
+                                    </CardContent>
+                                </CardActionArea>
                                 <Box
                                     sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 1,
-                                        mb: 1,
+                                        position: "absolute",
+                                        top: 8,
+                                        right: 8,
                                     }}
                                 >
-                                    {getDeviceIcon(device.os)}
-                                    <Typography variant="h6" component="h3">
-                                        {device.name}
-                                    </Typography>
+                                    <Button
+                                        size="small"
+                                        variant={
+                                            isSelected ? "contained" : "outlined"
+                                        }
+                                        endIcon={<ArrowForwardIcon />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedDevice(
+                                                isSelected ? null : device.name,
+                                            );
+                                        }}
+                                    >
+                                        {isSelected ? "Selected" : "Select"}
+                                    </Button>
                                 </Box>
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                >
-                                    OS: {capitalize(device.os)}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                >
-                                    Emulators Enabled:{" "}
-                                    {device.emulatorsEnabled
-                                        .map(capitalize)
-                                        .join(", ")}
-                                </Typography>
-                            </CardContent>
-                            <Button
-                                variant={
-                                    selectedDevice === device.name
-                                        ? "contained"
-                                        : "outlined"
-                                }
-                                onClick={() =>
-                                    setSelectedDevice(
-                                        selectedDevice === device.name
-                                            ? null
-                                            : device.name,
-                                    )
-                                }
-                                sx={{
-                                    minWidth: "60px",
-                                    borderRadius: 0,
-                                    borderTopLeftRadius: 0,
-                                    borderBottomLeftRadius: 0,
-                                }}
-                            >
-                                <ArrowForwardIcon />
-                            </Button>
-                        </Card>
-                    ))}
+                            </Card>
+                        );
+                    })}
                 </Box>
             )}
 
             <EmulatorActionForm />
-        </Box>
+        </Container>
     );
 }

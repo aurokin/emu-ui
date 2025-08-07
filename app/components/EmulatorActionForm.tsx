@@ -7,6 +7,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import Paper from "@mui/material/Paper";
+import Divider from "@mui/material/Divider";
 import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
 
@@ -40,19 +41,21 @@ export function EmulatorActionForm() {
     };
 
     return (
-        <Paper sx={{ padding: 3, marginTop: 3 }}>
+        <Paper sx={{ p: 3, mt: 4, borderRadius: 3 }}>
             <Typography variant="h5" gutterBottom>
                 Emulator Actions for {selectedDeviceData.name}
             </Typography>
             <Typography
                 variant="body2"
                 color="text.secondary"
-                sx={{ marginBottom: 2 }}
+                sx={{ mb: 2 }}
             >
                 Choose what action to perform for each emulator:
             </Typography>
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {selectedDeviceData.emulatorsEnabled.map((emulator) => (
                     <FormControl key={emulator}>
                         <FormLabel component="legend">{emulator}</FormLabel>
