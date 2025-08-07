@@ -62,7 +62,7 @@ export function Header({
             <Toolbar disableGutters>
                 <Container maxWidth="lg" sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Box aria-label="EmuSync" sx={{ display: "flex", alignItems: "center" }}>
-                        <Logo />
+                        <Logo size={32} />
                     </Box>
                     <Box sx={{ flexGrow: 1 }} />
                     <Tooltip title={`Palette: ${paletteName}`}>

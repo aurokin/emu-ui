@@ -26,9 +26,9 @@ export function Logo({ size = 28 }: { size?: number }) {
                 height="20"
                 rx="6"
                 fill="url(#emuGradient)"
-                opacity={0.12}
+                opacity={0.22}
             />
-            <g stroke="url(#emuGradient)" strokeWidth="2.4" strokeLinecap="round" fill="none">
+            <g stroke="url(#emuGradient)" strokeWidth="2.8" strokeLinecap="round" fill="none">
                 <path d="M8 7.5 L8 16.5" />
                 <path d="M9 7.5 H18" />
                 <path d="M9 12 H16.5" />
@@ -37,4 +37,3 @@ export function Logo({ size = 28 }: { size?: number }) {
         </svg>
     );
 }
-
