@@ -16,20 +16,9 @@ import ListItemText from "@mui/material/ListItemText";
 import PaletteIcon from "@mui/icons-material/Palette";
 import CircleIcon from "@mui/icons-material/Circle";
 import { useState } from "react";
-
-type ThemeMode = "system" | "light" | "dark";
-
-export function Header({
-    themeMode,
-    onCycleMode,
-    paletteName,
-    onChangePalette,
-}: {
-    themeMode: ThemeMode;
-    onCycleMode: () => void;
-    paletteName: "indigoCyan" | "emeraldSlate" | "amberRose";
-    onChangePalette: (name: "indigoCyan" | "emeraldSlate" | "amberRose") => void;
-}) {
+import { useThemeSettings } from "~/theme/ThemeProvider";
+export function Header() {
+    const { themeMode, cycleThemeMode, paletteName, changePalette } = useThemeSettings();
     const label =
         themeMode === "system"
             ? "Theme: System"
@@ -74,7 +63,7 @@ export function Header({
                         <MenuItem
                             selected={paletteName === "emeraldSlate"}
                             onClick={() => {
-                                onChangePalette("emeraldSlate");
+                                changePalette("emeraldSlate");
                                 handleClose();
                             }}
                         >
@@ -86,7 +75,7 @@ export function Header({
                         <MenuItem
                             selected={paletteName === "indigoCyan"}
                             onClick={() => {
-                                onChangePalette("indigoCyan");
+                                changePalette("indigoCyan");
                                 handleClose();
                             }}
                         >
@@ -98,7 +87,7 @@ export function Header({
                         <MenuItem
                             selected={paletteName === "amberRose"}
                             onClick={() => {
-                                onChangePalette("amberRose");
+                                changePalette("amberRose");
                                 handleClose();
                             }}
                         >
@@ -109,7 +98,7 @@ export function Header({
                         </MenuItem>
                     </Menu>
                     <Tooltip title={`${label} — click to change`}>
-                        <IconButton color="inherit" onClick={onCycleMode} aria-label="Toggle theme mode">
+                        <IconButton color="inherit" onClick={cycleThemeMode} aria-label="Toggle theme mode">
                             <Icon />
                         </IconButton>
                     </Tooltip>
