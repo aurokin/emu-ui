@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
@@ -9,6 +9,7 @@ import Radio from "@mui/material/Radio";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
 import type { DeviceSyncRequest } from "~/types/device";
@@ -21,6 +22,8 @@ export function EmulatorActionForm() {
     const selectedDeviceData = devices.find(
         (device) => device.name === selectedDevice,
     );
+
+    const [requestInProgress, setRequestInProgress] = useState(false);
 
     useEffect(() => {
         if (selectedDeviceData) {
@@ -52,6 +55,7 @@ export function EmulatorActionForm() {
         };
 
         try {
+            setRequestInProgress(true);
             const res = await fetch("/api/device-sync", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -65,6 +69,8 @@ export function EmulatorActionForm() {
         } catch (err) {
             // eslint-disable-next-line no-console
             console.error("Failed to request device sync", err);
+        } finally {
+            setRequestInProgress(false);
         }
     };
 
@@ -122,6 +128,7 @@ export function EmulatorActionForm() {
                     variant="contained"
                     color="primary"
                     disabled={
+                        requestInProgress ||
                         !selectedDeviceData.emulatorsEnabled.some(
                             (emu) =>
                                 emulatorActions[emu] === "push" ||
@@ -130,7 +137,11 @@ export function EmulatorActionForm() {
                     }
                     onClick={handleSubmit}
                 >
-                    Submit
+                    {requestInProgress ? (
+                        <CircularProgress size={20} color="inherit" />
+                    ) : (
+                        "Submit"
+                    )}
                 </Button>
             </Box>
         </Paper>
