@@ -47,10 +47,6 @@ export function EmulatorActionForm() {
         setRequestInProgress(false);
     }, [selectedDevice, selectedDeviceData, setEmulatorActions]);
 
-    if (!selectedDevice || !selectedDeviceData) {
-        return null;
-    }
-
     const handleActionChange = (emulator: string, action: EmulatorAction) => {
         setEmulatorActions({
             ...emulatorActions,
@@ -124,7 +120,7 @@ export function EmulatorActionForm() {
         setDeviceSyncResponse,
     ]);
 
-    // Stop showing in-progress once status leaves IN_PROGRESS
+    // Mark request complete once status leaves IN_PROGRESS
     useEffect(() => {
         if (!deviceSyncResponse) return;
         if (
@@ -133,7 +129,11 @@ export function EmulatorActionForm() {
         ) {
             setRequestInProgress(false);
         }
-    }, [deviceSyncResponse?.deviceSyncRecord.status]);
+    }, [deviceSyncResponse?.deviceSyncRecord.status, setRequestInProgress]);
+
+    if (!selectedDevice || !selectedDeviceData) {
+        return null;
+    }
 
     return (
         <Paper sx={{ p: 3, mt: 4, borderRadius: 3 }}>
