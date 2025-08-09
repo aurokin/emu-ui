@@ -13,6 +13,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
 import type { DeviceSyncRequest, DeviceSyncResponse } from "~/types/device";
+import { SyncStatus } from "~/types/device";
 import { capitalize } from "~/utilities/utils";
 
 export function EmulatorActionForm() {
@@ -86,6 +87,41 @@ export function EmulatorActionForm() {
             setRequestInProgress(false);
         }
     };
+
+    // Poll for sync status updates every 3s while in progress
+    useEffect(() => {
+        if (
+            deviceSyncResponse &&
+            deviceSyncResponse.deviceSyncRecord.status === SyncStatus.IN_PROGRESS
+        ) {
+            const id = deviceSyncResponse.id;
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/device-sync/${id}`);
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}`);
+                    }
+                    const data = (await res.json()) as DeviceSyncResponse;
+                    setDeviceSyncResponse(data);
+                    if (
+                        data.deviceSyncRecord.status !== SyncStatus.IN_PROGRESS
+                    ) {
+                        clearInterval(interval);
+                    }
+                } catch (e) {
+                    // Stop polling on error to avoid loops; surface via console
+                    // eslint-disable-next-line no-console
+                    console.error("Polling device sync failed", e);
+                    clearInterval(interval);
+                }
+            }, 3000);
+            return () => clearInterval(interval);
+        }
+    }, [
+        deviceSyncResponse?.id,
+        deviceSyncResponse?.deviceSyncRecord.status,
+        setDeviceSyncResponse,
+    ]);
 
     return (
         <Paper sx={{ p: 3, mt: 4, borderRadius: 3 }}>
