@@ -12,11 +12,18 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
-import type { DeviceSyncRequest } from "~/types/device";
+import type { DeviceSyncRequest, DeviceSyncResponse } from "~/types/device";
 import { capitalize } from "~/utilities/utils";
 
 export function EmulatorActionForm() {
-    const { devices, selectedDevice, emulatorActions, setEmulatorActions } =
+    const {
+        devices,
+        selectedDevice,
+        emulatorActions,
+        setEmulatorActions,
+        deviceSyncResponse,
+        setDeviceSyncResponse,
+    } =
         useDevices();
 
     const selectedDeviceData = devices.find(
@@ -33,6 +40,8 @@ export function EmulatorActionForm() {
             });
             setEmulatorActions(defaultActions);
         }
+        // Clear any previous sync response when switching devices
+        setDeviceSyncResponse(null);
     }, [selectedDevice, selectedDeviceData, setEmulatorActions]);
 
     if (!selectedDevice || !selectedDeviceData) {
@@ -55,6 +64,8 @@ export function EmulatorActionForm() {
         };
 
         try {
+            // Reset previous response and start request
+            setDeviceSyncResponse(null);
             setRequestInProgress(true);
             const res = await fetch("/api/device-sync", {
                 method: "POST",
@@ -64,8 +75,10 @@ export function EmulatorActionForm() {
             if (!res.ok) {
                 throw new Error(`HTTP ${res.status}`);
             }
+            const data = (await res.json()) as DeviceSyncResponse;
+            setDeviceSyncResponse(data);
             // eslint-disable-next-line no-console
-            console.log("Device sync requested", payload);
+            console.log("Device sync requested", data);
         } catch (err) {
             // eslint-disable-next-line no-console
             console.error("Failed to request device sync", err);
@@ -144,6 +157,60 @@ export function EmulatorActionForm() {
                     )}
                 </Button>
             </Box>
+
+            {deviceSyncResponse && (
+                <Paper sx={{ p: 2, mt: 3 }} variant="outlined">
+                    <Typography variant="subtitle1" gutterBottom>
+                        Sync Response
+                    </Typography>
+                    <Typography variant="body2">
+                        ID: {deviceSyncResponse.id}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                        Status: {deviceSyncResponse.deviceSyncRecord.status}
+                    </Typography>
+                    <Divider sx={{ my: 1 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        Actions
+                    </Typography>
+                    <Box component="ul" sx={{ pl: 3, my: 1 }}>
+                        {deviceSyncResponse.deviceSyncRecord.deviceSyncRequest.emulatorActions.map(
+                            (item) => (
+                                <Box component="li" key={item.emulator}>
+                                    <Typography variant="body2">
+                                        {capitalize(item.emulator)} — {item.action}
+                                    </Typography>
+                                </Box>
+                            ),
+                        )}
+                    </Box>
+                    {deviceSyncResponse.deviceSyncRecord.output?.length ? (
+                        <>
+                            <Divider sx={{ my: 1 }} />
+                            <Typography
+                                variant="body2"
+                                sx={{ fontWeight: 600, mb: 1 }}
+                            >
+                                Output
+                            </Typography>
+                            <Box
+                                component="pre"
+                                sx={{
+                                    m: 0,
+                                    p: 1,
+                                    bgcolor: "action.hover",
+                                    borderRadius: 1,
+                                    overflowX: "auto",
+                                }}
+                            >
+                                {deviceSyncResponse.deviceSyncRecord.output.join(
+                                    "\n",
+                                )}
+                            </Box>
+                        </>
+                    ) : null}
+                </Paper>
+            )}
         </Paper>
     );
 }
