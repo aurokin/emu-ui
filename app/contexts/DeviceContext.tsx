@@ -13,6 +13,8 @@ interface DeviceContextType {
     setEmulatorActions: (actions: EmulatorActions) => void;
     deviceSyncResponse: DeviceSyncResponse | null;
     setDeviceSyncResponse: (resp: DeviceSyncResponse | null) => void;
+    requestInProgress: boolean;
+    setRequestInProgress: (val: boolean) => void;
 }
 
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
@@ -29,6 +31,7 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
     const [emulatorActions, setEmulatorActions] = useState<EmulatorActions>({});
     const [deviceSyncResponse, setDeviceSyncResponse] =
         useState<DeviceSyncResponse | null>(null);
+    const [requestInProgress, setRequestInProgress] = useState(false);
 
     const fetchDevices = async () => {
         try {
@@ -63,6 +66,8 @@ export function DeviceProvider({ children }: DeviceProviderProps) {
         setEmulatorActions,
         deviceSyncResponse,
         setDeviceSyncResponse,
+        requestInProgress,
+        setRequestInProgress,
     };
 
     return (

@@ -51,8 +51,14 @@ function getDeviceIcon(os: string) {
 }
 
 export default function Home() {
-    const { devices, loading, error, selectedDevice, setSelectedDevice } =
-        useDevices();
+    const {
+        devices,
+        loading,
+        error,
+        selectedDevice,
+        setSelectedDevice,
+        requestInProgress,
+    } = useDevices();
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -117,11 +123,13 @@ export default function Home() {
                                 }}
                             >
                                 <CardActionArea
-                                    onClick={() =>
+                                    aria-disabled={requestInProgress}
+                                    onClick={() => {
+                                        if (requestInProgress) return;
                                         setSelectedDevice(
                                             isSelected ? null : device.name,
-                                        )
-                                    }
+                                        );
+                                    }}
                                 >
                                     <CardContent>
                                         <Stack
@@ -178,8 +186,10 @@ export default function Home() {
                                                 : "outlined"
                                         }
                                         endIcon={<ArrowForwardIcon />}
+                                        disabled={requestInProgress}
                                         onClick={(e) => {
                                             e.stopPropagation();
+                                            if (requestInProgress) return;
                                             setSelectedDevice(
                                                 isSelected ? null : device.name,
                                             );

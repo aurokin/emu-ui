@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
@@ -24,14 +24,14 @@ export function EmulatorActionForm() {
         setEmulatorActions,
         deviceSyncResponse,
         setDeviceSyncResponse,
+        requestInProgress,
+        setRequestInProgress,
     } =
         useDevices();
 
     const selectedDeviceData = devices.find(
         (device) => device.name === selectedDevice,
     );
-
-    const [requestInProgress, setRequestInProgress] = useState(false);
 
     useEffect(() => {
         if (selectedDeviceData) {
