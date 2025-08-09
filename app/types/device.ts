@@ -9,3 +9,20 @@ export interface DeviceSyncRequest {
     deviceName: string;
     emulatorActions: EmulatorActionItem[];
 }
+
+export enum SyncStatus {
+    IN_PROGRESS = "IN_PROGRESS",
+    FAILED = "FAILED",
+    COMPLETE = "COMPLETE",
+}
+
+export type DeviceSyncRecord = {
+    deviceSyncRequest: DeviceSyncRequest;
+    status: SyncStatus;
+    output: string[];
+};
+
+export type DeviceSyncResponse = {
+    id: string;
+    deviceSyncRecord: DeviceSyncRecord;
+};
