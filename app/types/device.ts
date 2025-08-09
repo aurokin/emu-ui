@@ -3,3 +3,9 @@ export interface Device {
     os: string;
     emulatorsEnabled: string[];
 }
+import type { EmulatorActionItem } from "~/types/emulatorAction";
+
+export interface DeviceSyncRequest {
+    deviceName: string;
+    emulatorActions: EmulatorActionItem[];
+}
