@@ -11,6 +11,7 @@ import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import { useDevices } from "~/contexts/DeviceContext";
 import type { EmulatorAction } from "~/types/emulatorAction";
+import type { DeviceSyncRequest } from "~/types/device";
 import { capitalize } from "~/utilities/utils";
 
 export function EmulatorActionForm() {
@@ -40,6 +41,31 @@ export function EmulatorActionForm() {
             ...emulatorActions,
             [emulator]: action,
         });
+    };
+
+    const handleSubmit = async () => {
+        const payload: DeviceSyncRequest = {
+            deviceName: selectedDeviceData.name,
+            emulatorActions: Object.entries(emulatorActions)
+                .filter(([, action]) => action !== "ignore")
+                .map(([emulator, action]) => ({ emulator, action })),
+        };
+
+        try {
+            const res = await fetch("/api/device-sync", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
+            // eslint-disable-next-line no-console
+            console.log("Device sync requested", payload);
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error("Failed to request device sync", err);
+        }
     };
 
     return (
@@ -102,14 +128,7 @@ export function EmulatorActionForm() {
                                 emulatorActions[emu] === "pull",
                         )
                     }
-                    onClick={() => {
-                        // For now, just log the actions
-                        // eslint-disable-next-line no-console
-                        console.log(
-                            "Submitting emulator actions",
-                            emulatorActions,
-                        );
-                    }}
+                    onClick={handleSubmit}
                 >
                     Submit
                 </Button>
