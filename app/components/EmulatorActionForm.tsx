@@ -43,6 +43,8 @@ export function EmulatorActionForm() {
         }
         // Clear any previous sync response when switching devices
         setDeviceSyncResponse(null);
+        // Ensure we are not stuck in a loading state on device change
+        setRequestInProgress(false);
     }, [selectedDevice, selectedDeviceData, setEmulatorActions]);
 
     if (!selectedDevice || !selectedDeviceData) {
@@ -83,7 +85,6 @@ export function EmulatorActionForm() {
         } catch (err) {
             // eslint-disable-next-line no-console
             console.error("Failed to request device sync", err);
-        } finally {
             setRequestInProgress(false);
         }
     };
@@ -122,6 +123,17 @@ export function EmulatorActionForm() {
         deviceSyncResponse?.deviceSyncRecord.status,
         setDeviceSyncResponse,
     ]);
+
+    // Stop showing in-progress once status leaves IN_PROGRESS
+    useEffect(() => {
+        if (!deviceSyncResponse) return;
+        if (
+            deviceSyncResponse.deviceSyncRecord.status !==
+            SyncStatus.IN_PROGRESS
+        ) {
+            setRequestInProgress(false);
+        }
+    }, [deviceSyncResponse?.deviceSyncRecord.status]);
 
     return (
         <Paper sx={{ p: 3, mt: 4, borderRadius: 3 }}>
