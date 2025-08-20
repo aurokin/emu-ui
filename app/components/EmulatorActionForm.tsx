@@ -94,7 +94,7 @@ export function EmulatorActionForm() {
             const id = deviceSyncResponse.id;
             const interval = setInterval(async () => {
                 try {
-                    const res = await fetch(`/device-sync/${id}`);
+                    const res = await fetch(`/api/device-sync/${id}`);
                     if (!res.ok) {
                         throw new Error(`HTTP ${res.status}`);
                     }
