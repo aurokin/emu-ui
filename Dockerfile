@@ -19,4 +19,12 @@ COPY ./package.json package-lock.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
 WORKDIR /app
+
+# Environment variables:
+# - REDIS_URL: Redis connection URL (default: redis://localhost:6379)
+# - DB_PATH: Path to db.json config file (default: ./db.json)
+#
+# Mount db.json at runtime:
+# docker run -v /path/to/db.json:/app/db.json -e REDIS_URL=redis://host:6379 ...
+
 CMD ["npm", "run", "start"]
