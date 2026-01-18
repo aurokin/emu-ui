@@ -232,6 +232,7 @@ export default function Home() {
                                             : 1,
                                     position: "relative",
                                     borderRadius: 3,
+                                    overflow: "hidden",
                                     backgroundColor: "rgba(17, 24, 37, 0.82)",
                                     border: "1px solid",
                                     borderColor: isSelected
@@ -263,7 +264,8 @@ export default function Home() {
                                             "rgba(122, 162, 247, 0.15)",
                                         backgroundColor:
                                             "rgba(10, 14, 22, 0.6)",
-                                        borderRadius: "18px 18px 0 0",
+                                        borderTopLeftRadius: "inherit",
+                                        borderTopRightRadius: "inherit",
                                     }}
                                 >
                                     <Box
