@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useDevices } from "~/contexts/DeviceContext";
@@ -55,6 +55,8 @@ export function EmulatorActionForm() {
         requestInProgress,
         setRequestInProgress,
     } = useDevices();
+
+    const outputRef = useRef<HTMLPreElement | null>(null);
 
     const selectedDeviceData = devices.find(
         (device) => device.name === selectedDevice,
@@ -149,6 +151,11 @@ export function EmulatorActionForm() {
         }
     }, [deviceSyncResponse?.deviceSyncRecord.status, setRequestInProgress]);
 
+    useEffect(() => {
+        if (!outputRef.current) return;
+        outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    }, [deviceSyncResponse?.deviceSyncRecord.output?.length]);
+
     if (!selectedDevice || !selectedDeviceData) {
         return null;
     }
@@ -158,6 +165,9 @@ export function EmulatorActionForm() {
             emulatorActions[emu] === "push" || emulatorActions[emu] === "pull",
     );
     const isActionDisabled = requestInProgress || !hasActions;
+    const isResetDisabled =
+        !deviceSyncResponse ||
+        deviceSyncResponse.deviceSyncRecord.status === SyncStatus.IN_PROGRESS;
     const statusColor = deviceSyncResponse
         ? deviceSyncResponse.deviceSyncRecord.status === SyncStatus.IN_PROGRESS
             ? "#f6c177"
@@ -450,18 +460,19 @@ export function EmulatorActionForm() {
                                 },
                             );
                             setEmulatorActions(resetActions);
+                            setDeviceSyncResponse(null);
                         }}
-                        disabled={isActionDisabled}
+                        disabled={isResetDisabled}
                         sx={{
                             px: 2.5,
                             py: 1,
                             borderRadius: 999,
                             border: "1px solid",
-                            borderColor: isActionDisabled
+                            borderColor: isResetDisabled
                                 ? "rgba(122, 162, 247, 0.15)"
                                 : "rgba(122, 162, 247, 0.35)",
                             backgroundColor: "rgba(122, 162, 247, 0.08)",
-                            color: isActionDisabled
+                            color: isResetDisabled
                                 ? "rgba(169, 178, 199, 0.5)"
                                 : "text.secondary",
                             fontSize: "0.75rem",
@@ -469,9 +480,7 @@ export function EmulatorActionForm() {
                             fontWeight: 600,
                             letterSpacing: "0.12em",
                             textTransform: "uppercase",
-                            cursor: isActionDisabled
-                                ? "not-allowed"
-                                : "pointer",
+                            cursor: isResetDisabled ? "not-allowed" : "pointer",
                             transition: "all 0.2s ease",
                             "&:hover:not(:disabled)": {
                                 borderColor: "rgba(79, 209, 197, 0.5)",
@@ -683,6 +692,7 @@ export function EmulatorActionForm() {
                                 </Typography>
                                 <Box
                                     component="pre"
+                                    ref={outputRef}
                                     sx={{
                                         m: 0,
                                         p: 2,
