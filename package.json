@@ -3,11 +3,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "react-router build",
-        "dev": "react-router dev --host",
-        "start": "react-router-serve ./build/server/index.js",
-        "typecheck": "react-router typegen && tsc",
-        "format": "prettier . --write"
+        "build": "bunx react-router build",
+        "dev": "bunx react-router dev --host",
+        "start": "bunx react-router-serve ./build/server/index.js",
+        "typecheck": "bunx react-router typegen && bunx tsc",
+        "format": "bunx prettier . --write"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
