@@ -131,7 +131,7 @@ export default function Home() {
                 <Typography
                     variant="h3"
                     sx={{
-                        fontFamily: '"Fraunces", serif',
+                        fontFamily: '"Unbounded", sans-serif',
                         fontWeight: 600,
                         mb: 1,
                     }}

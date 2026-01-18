@@ -476,7 +476,7 @@ export function EmulatorActionForm() {
                                 ? "rgba(169, 178, 199, 0.5)"
                                 : "text.secondary",
                             fontSize: "0.75rem",
-                            fontFamily: '"Hanken Grotesk", sans-serif',
+                            fontFamily: '"Commissioner", sans-serif',
                             fontWeight: 600,
                             letterSpacing: "0.12em",
                             textTransform: "uppercase",
@@ -512,7 +512,7 @@ export function EmulatorActionForm() {
                                 ? "rgba(169, 178, 199, 0.6)"
                                 : "#0b0f17",
                             fontSize: "0.8rem",
-                            fontFamily: '"Hanken Grotesk", sans-serif',
+                            fontFamily: '"Commissioner", sans-serif',
                             fontWeight: 700,
                             letterSpacing: "0.12em",
                             textTransform: "uppercase",
@@ -613,7 +613,7 @@ export function EmulatorActionForm() {
                             sx={{
                                 color: "text.secondary",
                                 fontSize: "0.65rem",
-                                fontFamily: '"JetBrains Mono", monospace',
+                                fontFamily: '"Fragment Mono", monospace',
                             }}
                         >
                             ID: {deviceSyncResponse.id}
@@ -702,7 +702,7 @@ export function EmulatorActionForm() {
                                         border: "1px solid rgba(122, 162, 247, 0.2)",
                                         fontSize: "0.75rem",
                                         fontFamily:
-                                            '"JetBrains Mono", monospace',
+                                            '"Fragment Mono", monospace',
                                         lineHeight: 1.7,
                                         color: "#eef1f7",
                                         overflowX: "auto",

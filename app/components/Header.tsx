@@ -52,7 +52,7 @@ export function Header() {
                             <Typography
                                 variant="h6"
                                 sx={{
-                                    fontFamily: '"Fraunces", serif',
+                                    fontFamily: '"Unbounded", sans-serif',
                                     fontSize: { xs: "1.1rem", sm: "1.25rem" },
                                     fontWeight: 600,
                                     letterSpacing: "0.02em",

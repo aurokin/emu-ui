@@ -21,7 +21,7 @@ export const links: Route.LinksFunction = () => [
     },
     {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Commissioner:wght@300;400;500;600;700&family=Unbounded:wght@400;500;600;700&family=Fragment+Mono&display=swap",
     },
 ];
 
@@ -79,7 +79,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
                 padding: "72px 20px 24px",
                 maxWidth: "960px",
                 margin: "0 auto",
-                fontFamily: '"Hanken Grotesk", sans-serif',
+                fontFamily: '"Commissioner", sans-serif',
                 color: "#eef1f7",
             }}
         >
@@ -94,7 +94,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
             >
                 <h1
                     style={{
-                        fontFamily: '"Fraunces", serif',
+                        fontFamily: '"Unbounded", sans-serif',
                         fontSize: "1.85rem",
                         color: "#f28fad",
                         marginBottom: "12px",
@@ -121,7 +121,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
                             border: "1px solid rgba(122, 162, 247, 0.25)",
                             borderRadius: "12px",
                             fontSize: "0.8rem",
-                            fontFamily: '"JetBrains Mono", monospace',
+                            fontFamily: '"Fragment Mono", monospace',
                             color: "#7aa2f7",
                             overflow: "auto",
                             margin: 0,

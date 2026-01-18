@@ -6,9 +6,9 @@
    ══════════════════════════════════════════════════════════════════════════════ */
 
 @theme {
-    --font-body: "Hanken Grotesk", "Segoe UI", sans-serif;
-    --font-display: "Fraunces", "Iowan Old Style", serif;
-    --font-mono: "JetBrains Mono", "Fira Code", monospace;
+    --font-body: "Commissioner", "Segoe UI", sans-serif;
+    --font-display: "Unbounded", "Segoe UI", sans-serif;
+    --font-mono: "Fragment Mono", "Fira Code", monospace;
 }
 
 :root {
