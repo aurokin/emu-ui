@@ -1,115 +1,128 @@
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import { alpha } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import { Logo } from "~/components/Logo";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import PaletteIcon from "@mui/icons-material/Palette";
-import CircleIcon from "@mui/icons-material/Circle";
-import { useState } from "react";
-import { useThemeSettings } from "~/theme/ThemeProvider";
+
 export function Header() {
-    const { themeMode, cycleThemeMode, paletteName, changePalette } =
-        useThemeSettings();
-    const label = themeMode === "light" ? "Theme: Light" : "Theme: Dark";
-
-    const Icon = themeMode === "light" ? LightModeIcon : DarkModeIcon;
-
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
-    const handleOpen = (e: React.MouseEvent<HTMLElement>) =>
-        setAnchorEl(e.currentTarget);
-    const handleClose = () => setAnchorEl(null);
-
     return (
         <AppBar
             position="sticky"
             color="transparent"
             elevation={0}
-            sx={(theme) => ({
-                backdropFilter: "saturate(180%) blur(10px)",
-                WebkitBackdropFilter: "saturate(180%) blur(10px)",
-                backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                borderBottom: `1px solid ${theme.palette.divider}`,
-            })}
+            sx={{
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+                backgroundColor: "rgba(10, 10, 12, 0.85)",
+                borderBottom: "1px solid",
+                borderColor: "divider",
+                "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    background: "linear-gradient(90deg, transparent 0%, #00ff41 20%, #00ffff 50%, #00ff41 80%, transparent 100%)",
+                    opacity: 0.4,
+                },
+            }}
         >
-            <Toolbar disableGutters>
+            <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
                 <Container
                     maxWidth="lg"
-                    sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                    }}
                 >
+                    {/* Logo and Title */}
                     <Box
-                        aria-label="EmuSync"
-                        sx={{ display: "flex", alignItems: "center" }}
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                        }}
                     >
-                        <Logo size={32} />
+                        <Logo size={28} />
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontFamily: '"Press Start 2P", monospace',
+                                fontSize: { xs: "0.65rem", sm: "0.75rem" },
+                                color: "#00ff41",
+                                textShadow: "0 0 10px rgba(0, 255, 65, 0.5)",
+                                letterSpacing: "0.1em",
+                            }}
+                        >
+                            EMUSYNC
+                        </Typography>
                     </Box>
+
                     <Box sx={{ flexGrow: 1 }} />
-                    <Tooltip title={`Palette: ${paletteName}`}>
-                        <IconButton
-                            color="inherit"
-                            aria-label="Choose palette"
-                            onClick={handleOpen}
-                        >
-                            <PaletteIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                        <MenuItem
-                            selected={paletteName === "indigoCyan"}
-                            onClick={() => {
-                                changePalette("indigoCyan");
-                                handleClose();
+
+                    {/* Status Indicator */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            px: 1.5,
+                            py: 0.5,
+                            border: "1px solid",
+                            borderColor: "divider",
+                            borderRadius: 0,
+                            backgroundColor: "rgba(0, 255, 65, 0.03)",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: 0,
+                                backgroundColor: "#00ff41",
+                                boxShadow: "0 0 8px #00ff41",
+                                animation: "pulse-glow 2s ease-in-out infinite",
+                                "@keyframes pulse-glow": {
+                                    "0%, 100%": {
+                                        opacity: 1,
+                                        boxShadow: "0 0 5px #00ff41",
+                                    },
+                                    "50%": {
+                                        opacity: 0.7,
+                                        boxShadow: "0 0 15px #00ff41",
+                                    },
+                                },
+                            }}
+                        />
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "#00ff41",
+                                fontSize: "0.6rem",
+                                letterSpacing: "0.15em",
+                                fontWeight: 500,
                             }}
                         >
-                            <ListItemIcon>
-                                <CircleIcon sx={{ color: "#6366F1" }} />
-                            </ListItemIcon>
-                            <ListItemText primary="Indigo + Cyan" />
-                        </MenuItem>
-                        <MenuItem
-                            selected={paletteName === "emeraldSlate"}
-                            onClick={() => {
-                                changePalette("emeraldSlate");
-                                handleClose();
-                            }}
-                        >
-                            <ListItemIcon>
-                                <CircleIcon sx={{ color: "#10B981" }} />
-                            </ListItemIcon>
-                            <ListItemText primary="Emerald + Slate" />
-                        </MenuItem>
-                        <MenuItem
-                            selected={paletteName === "amberRose"}
-                            onClick={() => {
-                                changePalette("amberRose");
-                                handleClose();
-                            }}
-                        >
-                            <ListItemIcon>
-                                <CircleIcon sx={{ color: "#F59E0B" }} />
-                            </ListItemIcon>
-                            <ListItemText primary="Amber + Rose" />
-                        </MenuItem>
-                    </Menu>
-                    <Tooltip title={`${label} — click to change`}>
-                        <IconButton
-                            color="inherit"
-                            onClick={cycleThemeMode}
-                            aria-label="Toggle theme mode"
-                        >
-                            <Icon />
-                        </IconButton>
-                    </Tooltip>
+                            ONLINE
+                        </Typography>
+                    </Box>
+
+                    {/* Version Tag */}
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            color: "text.secondary",
+                            fontSize: "0.6rem",
+                            letterSpacing: "0.1em",
+                            opacity: 0.6,
+                            display: { xs: "none", sm: "block" },
+                        }}
+                    >
+                        v1.0.0
+                    </Typography>
                 </Container>
             </Toolbar>
         </AppBar>

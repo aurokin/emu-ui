@@ -5,16 +5,11 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
-    useLoaderData,
 } from "react-router";
 import { Header } from "~/components/Header";
 import { DeviceProvider } from "~/contexts/DeviceContext";
 import "~/app.css";
-import {
-    ThemeSettingsProvider,
-    type ThemeMode,
-    type PaletteName,
-} from "~/theme/ThemeProvider";
+import { ThemeSettingsProvider } from "~/theme/ThemeProvider";
 import type { Route } from "./+types/root";
 
 export const links: Route.LinksFunction = () => [
@@ -26,7 +21,7 @@ export const links: Route.LinksFunction = () => [
     },
     {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Press+Start+2P&display=swap",
     },
 ];
 
@@ -51,36 +46,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-    const cookie = request.headers.get("cookie") || "";
-    const get = (name: string) =>
-        cookie
-            .split(/;\s*/)
-            .map((p) => p.split("="))
-            .find(([k]) => k === name)?.[1];
-    const themeFromCookie = get("themeMode");
-    const paletteFromCookie = get("paletteName");
-    const initialThemeMode: ThemeMode | undefined =
-        themeFromCookie === "light" || themeFromCookie === "dark"
-            ? (themeFromCookie as ThemeMode)
-            : undefined;
-    const initialPaletteName: PaletteName | undefined =
-        paletteFromCookie === "indigoCyan" ||
-        paletteFromCookie === "emeraldSlate" ||
-        paletteFromCookie === "amberRose"
-            ? (paletteFromCookie as PaletteName)
-            : undefined;
-    return { initialThemeMode, initialPaletteName };
-}
-
 export default function App() {
-    const { initialThemeMode, initialPaletteName } =
-        useLoaderData<typeof loader>();
     return (
-        <ThemeSettingsProvider
-            initialThemeMode={initialThemeMode}
-            initialPaletteName={initialPaletteName}
-        >
+        <ThemeSettingsProvider>
             <DeviceProvider>
                 <Header />
                 <Outlet />
@@ -90,12 +58,12 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-    let message = "Oops!";
+    let message = "ERROR";
     let details = "An unexpected error occurred.";
     let stack: string | undefined;
 
     if (isRouteErrorResponse(error)) {
-        message = error.status === 404 ? "404" : "Error";
+        message = error.status === 404 ? "404" : "ERROR";
         details =
             error.status === 404
                 ? "The requested page could not be found."
@@ -106,14 +74,59 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     }
 
     return (
-        <main className="pt-16 p-4 container mx-auto">
-            <h1>{message}</h1>
-            <p>{details}</p>
-            {stack && (
-                <pre className="w-full p-4 overflow-x-auto">
-                    <code>{stack}</code>
-                </pre>
-            )}
+        <main
+            style={{
+                padding: "64px 16px 16px",
+                maxWidth: "1024px",
+                margin: "0 auto",
+                fontFamily: '"JetBrains Mono", monospace',
+                color: "#e0e0e0",
+            }}
+        >
+            <div
+                style={{
+                    border: "1px solid #ff3366",
+                    backgroundColor: "rgba(255, 51, 102, 0.05)",
+                    padding: "24px",
+                }}
+            >
+                <h1
+                    style={{
+                        fontFamily: '"Press Start 2P", monospace',
+                        fontSize: "1.25rem",
+                        color: "#ff3366",
+                        textShadow: "0 0 10px rgba(255, 51, 102, 0.5)",
+                        marginBottom: "16px",
+                        letterSpacing: "0.05em",
+                    }}
+                >
+                    {message}
+                </h1>
+                <p
+                    style={{
+                        color: "#888899",
+                        fontSize: "0.875rem",
+                        marginBottom: stack ? "16px" : 0,
+                    }}
+                >
+                    {details}
+                </p>
+                {stack && (
+                    <pre
+                        style={{
+                            padding: "16px",
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            border: "1px solid #1a1a24",
+                            fontSize: "0.75rem",
+                            color: "#00cc33",
+                            overflow: "auto",
+                            margin: 0,
+                        }}
+                    >
+                        <code>{stack}</code>
+                    </pre>
+                )}
+            </div>
         </main>
     );
 }
