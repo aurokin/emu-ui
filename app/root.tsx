@@ -21,7 +21,7 @@ export const links: Route.LinksFunction = () => [
     },
     {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Press+Start+2P&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
     },
 ];
 
@@ -76,36 +76,38 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     return (
         <main
             style={{
-                padding: "64px 16px 16px",
-                maxWidth: "1024px",
+                padding: "72px 20px 24px",
+                maxWidth: "960px",
                 margin: "0 auto",
-                fontFamily: '"JetBrains Mono", monospace',
-                color: "#e0e0e0",
+                fontFamily: '"Hanken Grotesk", sans-serif',
+                color: "#eef1f7",
             }}
         >
             <div
                 style={{
-                    border: "1px solid #ff3366",
-                    backgroundColor: "rgba(255, 51, 102, 0.05)",
-                    padding: "24px",
+                    border: "1px solid rgba(242, 143, 173, 0.6)",
+                    backgroundColor: "rgba(242, 143, 173, 0.08)",
+                    padding: "28px",
+                    borderRadius: "16px",
+                    boxShadow: "0 20px 50px rgba(8, 10, 18, 0.35)",
                 }}
             >
                 <h1
                     style={{
-                        fontFamily: '"Press Start 2P", monospace',
-                        fontSize: "1.25rem",
-                        color: "#ff3366",
-                        textShadow: "0 0 10px rgba(255, 51, 102, 0.5)",
-                        marginBottom: "16px",
-                        letterSpacing: "0.05em",
+                        fontFamily: '"Fraunces", serif',
+                        fontSize: "1.85rem",
+                        color: "#f28fad",
+                        marginBottom: "12px",
+                        letterSpacing: "0.02em",
                     }}
                 >
                     {message}
                 </h1>
                 <p
                     style={{
-                        color: "#888899",
-                        fontSize: "0.875rem",
+                        color: "#cbd3e2",
+                        fontSize: "0.95rem",
+                        lineHeight: 1.6,
                         marginBottom: stack ? "16px" : 0,
                     }}
                 >
@@ -114,11 +116,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
                 {stack && (
                     <pre
                         style={{
-                            padding: "16px",
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            border: "1px solid #1a1a24",
-                            fontSize: "0.75rem",
-                            color: "#00cc33",
+                            padding: "16px 18px",
+                            backgroundColor: "rgba(10, 14, 22, 0.8)",
+                            border: "1px solid rgba(122, 162, 247, 0.25)",
+                            borderRadius: "12px",
+                            fontSize: "0.8rem",
+                            fontFamily: '"JetBrains Mono", monospace',
+                            color: "#7aa2f7",
                             overflow: "auto",
                             margin: 0,
                         }}

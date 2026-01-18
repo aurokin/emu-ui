@@ -1,10 +1,5 @@
 import { spawn } from "child_process";
-import type {
-    EmuDevice,
-    SyncPair,
-    EmuServer,
-    DeviceSyncRecord,
-} from "./types";
+import type { EmuDevice, SyncPair, EmuServer, DeviceSyncRecord } from "./types";
 import { SyncType, EmuOs } from "./types";
 import { Client as FtpClient } from "basic-ftp";
 import { getFolderName } from "./utility";

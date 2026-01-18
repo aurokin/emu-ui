@@ -12,24 +12,26 @@ export function Header() {
             color="transparent"
             elevation={0}
             sx={{
-                backdropFilter: "blur(10px)",
-                WebkitBackdropFilter: "blur(10px)",
-                backgroundColor: "rgba(10, 10, 12, 0.85)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                backgroundColor: "rgba(12, 16, 27, 0.7)",
                 borderBottom: "1px solid",
-                borderColor: "divider",
+                borderColor: "rgba(122, 162, 247, 0.2)",
+                boxShadow: "0 12px 36px rgba(6, 9, 16, 0.4)",
                 "&::after": {
                     content: '""',
                     position: "absolute",
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    height: "1px",
-                    background: "linear-gradient(90deg, transparent 0%, #00ff41 20%, #00ffff 50%, #00ff41 80%, transparent 100%)",
-                    opacity: 0.4,
+                    height: "2px",
+                    background:
+                        "linear-gradient(90deg, transparent 0%, rgba(79, 209, 197, 0.6) 30%, rgba(122, 162, 247, 0.6) 60%, transparent 100%)",
+                    opacity: 0.7,
                 },
             }}
         >
-            <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
+            <Toolbar disableGutters sx={{ minHeight: { xs: 64, sm: 72 } }}>
                 <Container
                     maxWidth="lg"
                     sx={{
@@ -38,7 +40,6 @@ export function Header() {
                         gap: 2,
                     }}
                 >
-                    {/* Logo and Title */}
                     <Box
                         sx={{
                             display: "flex",
@@ -46,53 +47,63 @@ export function Header() {
                             gap: 1.5,
                         }}
                     >
-                        <Logo size={28} />
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontFamily: '"Press Start 2P", monospace',
-                                fontSize: { xs: "0.65rem", sm: "0.75rem" },
-                                color: "#00ff41",
-                                textShadow: "0 0 10px rgba(0, 255, 65, 0.5)",
-                                letterSpacing: "0.1em",
-                            }}
-                        >
-                            EMUSYNC
-                        </Typography>
+                        <Logo size={30} />
+                        <Box>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontFamily: '"Fraunces", serif',
+                                    fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                                    fontWeight: 600,
+                                    letterSpacing: "0.02em",
+                                }}
+                            >
+                                EmuSync
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "text.secondary",
+                                    fontSize: "0.7rem",
+                                    letterSpacing: "0.1em",
+                                }}
+                            >
+                                Cloud saves, seamlessly
+                            </Typography>
+                        </Box>
                     </Box>
 
                     <Box sx={{ flexGrow: 1 }} />
 
-                    {/* Status Indicator */}
                     <Box
                         sx={{
                             display: "flex",
                             alignItems: "center",
                             gap: 1,
-                            px: 1.5,
-                            py: 0.5,
+                            px: 1.75,
+                            py: 0.75,
+                            borderRadius: 999,
                             border: "1px solid",
-                            borderColor: "divider",
-                            borderRadius: 0,
-                            backgroundColor: "rgba(0, 255, 65, 0.03)",
+                            borderColor: "rgba(79, 209, 197, 0.4)",
+                            backgroundColor: "rgba(79, 209, 197, 0.12)",
                         }}
                     >
                         <Box
                             sx={{
-                                width: 6,
-                                height: 6,
-                                borderRadius: 0,
-                                backgroundColor: "#00ff41",
-                                boxShadow: "0 0 8px #00ff41",
-                                animation: "pulse-glow 2s ease-in-out infinite",
-                                "@keyframes pulse-glow": {
+                                width: 8,
+                                height: 8,
+                                borderRadius: 999,
+                                backgroundColor: "#4fd1c5",
+                                boxShadow: "0 0 12px rgba(79, 209, 197, 0.7)",
+                                animation: "pulse 2.2s ease-in-out infinite",
+                                "@keyframes pulse": {
                                     "0%, 100%": {
+                                        transform: "scale(1)",
                                         opacity: 1,
-                                        boxShadow: "0 0 5px #00ff41",
                                     },
                                     "50%": {
-                                        opacity: 0.7,
-                                        boxShadow: "0 0 15px #00ff41",
+                                        transform: "scale(1.4)",
+                                        opacity: 0.6,
                                     },
                                 },
                             }}
@@ -100,24 +111,22 @@ export function Header() {
                         <Typography
                             variant="caption"
                             sx={{
-                                color: "#00ff41",
-                                fontSize: "0.6rem",
-                                letterSpacing: "0.15em",
-                                fontWeight: 500,
+                                color: "#4fd1c5",
+                                fontSize: "0.65rem",
+                                letterSpacing: "0.12em",
                             }}
                         >
-                            ONLINE
+                            CONNECTED
                         </Typography>
                     </Box>
 
-                    {/* Version Tag */}
                     <Typography
                         variant="caption"
                         sx={{
                             color: "text.secondary",
-                            fontSize: "0.6rem",
+                            fontSize: "0.65rem",
                             letterSpacing: "0.1em",
-                            opacity: 0.6,
+                            opacity: 0.7,
                             display: { xs: "none", sm: "block" },
                         }}
                     >

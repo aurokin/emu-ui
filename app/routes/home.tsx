@@ -26,9 +26,9 @@ export function meta({}: Route.MetaArgs) {
 function getDeviceIcon(os: string) {
     const osLower = os.toLowerCase();
     const iconSx = {
-        fontSize: 20,
-        color: "#00ffff",
-        filter: "drop-shadow(0 0 4px rgba(0, 255, 255, 0.5))",
+        fontSize: 22,
+        color: "#7aa2f7",
+        filter: "drop-shadow(0 6px 10px rgba(122, 162, 247, 0.35))",
     };
 
     if (osLower.includes("android")) {
@@ -52,15 +52,16 @@ function TerminalLoader() {
             sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 1,
-                color: "#00ff41",
+                gap: 1.5,
+                color: "text.secondary",
+                mb: 3,
             }}
         >
             <Box
                 component="span"
                 sx={{
                     display: "inline-flex",
-                    gap: "4px",
+                    gap: "6px",
                 }}
             >
                 {[0, 1, 2].map((i) => (
@@ -69,18 +70,20 @@ function TerminalLoader() {
                         sx={{
                             width: 8,
                             height: 8,
-                            backgroundColor: "#00ff41",
+                            borderRadius: 999,
+                            backgroundColor: "#4fd1c5",
                             animation: "loader-pulse 1.4s ease-in-out infinite",
                             animationDelay: `${i * 0.2}s`,
                             "@keyframes loader-pulse": {
                                 "0%, 80%, 100%": {
-                                    transform: "scale(0.6)",
-                                    opacity: 0.4,
+                                    transform: "scale(0.7)",
+                                    opacity: 0.5,
                                 },
                                 "40%": {
                                     transform: "scale(1)",
                                     opacity: 1,
-                                    boxShadow: "0 0 10px #00ff41",
+                                    boxShadow:
+                                        "0 0 10px rgba(79, 209, 197, 0.6)",
                                 },
                             },
                         }}
@@ -90,12 +93,12 @@ function TerminalLoader() {
             <Typography
                 variant="caption"
                 sx={{
-                    color: "#00ff41",
-                    letterSpacing: "0.1em",
-                    fontSize: "0.7rem",
+                    color: "#4fd1c5",
+                    letterSpacing: "0.14em",
+                    fontSize: "0.65rem",
                 }}
             >
-                LOADING...
+                SYNCING DEVICES
             </Typography>
         </Box>
     );
@@ -112,118 +115,95 @@ export default function Home() {
     } = useDevices();
 
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-            {/* Terminal Header */}
+        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
             <Box sx={{ mb: 4 }}>
-                <Box
+                <Typography
+                    variant="caption"
                     sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
+                        color: "#7aa2f7",
+                        letterSpacing: "0.2em",
+                        display: "block",
                         mb: 1,
                     }}
                 >
-                    <Typography
-                        variant="caption"
-                        sx={{
-                            color: "#00ffff",
-                            letterSpacing: "0.15em",
-                            fontSize: "0.65rem",
-                        }}
-                    >
-                        SYSTEM://
-                    </Typography>
-                    <Typography
-                        sx={{
-                            fontFamily: '"Press Start 2P", monospace',
-                            fontSize: { xs: "1rem", sm: "1.25rem" },
-                            color: "#00ff41",
-                            textShadow: "0 0 20px rgba(0, 255, 65, 0.5)",
-                            letterSpacing: "0.05em",
-                        }}
-                    >
-                        DEVICE_SELECT
-                    </Typography>
-                </Box>
-                <Box
+                    DEVICE CONTROL
+                </Typography>
+                <Typography
+                    variant="h3"
                     sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
+                        fontFamily: '"Fraunces", serif',
+                        fontWeight: 600,
+                        mb: 1,
                     }}
                 >
-                    <Box
+                    Choose a device to sync
+                </Typography>
+                <Typography
+                    sx={{
+                        color: "text.secondary",
+                        maxWidth: 520,
+                        fontSize: "0.95rem",
+                    }}
+                >
+                    Select a connected device to configure emulator actions and
+                    manage the latest save-state transfers.
+                </Typography>
+            </Box>
+
+            {loading && <TerminalLoader />}
+
+            {error && (
+                <Box
+                    sx={{
+                        p: 2.5,
+                        borderRadius: 3,
+                        border: "1px solid rgba(242, 143, 173, 0.4)",
+                        backgroundColor: "rgba(242, 143, 173, 0.1)",
+                        mb: 3,
+                    }}
+                >
+                    <Typography
                         sx={{
-                            color: "#00ff41",
-                            opacity: 0.7,
+                            color: "#f28fad",
+                            fontSize: "0.9rem",
+                            fontWeight: 600,
                         }}
                     >
-                        {">"}
-                    </Box>
+                        Unable to load devices
+                    </Typography>
                     <Typography
                         sx={{
                             color: "text.secondary",
                             fontSize: "0.8rem",
-                            letterSpacing: "0.02em",
                         }}
                     >
-                        Select a device to configure emulator sync actions
-                    </Typography>
-                </Box>
-            </Box>
-
-            {/* Loading State */}
-            {loading && <TerminalLoader />}
-
-            {/* Error State */}
-            {error && (
-                <Box
-                    sx={{
-                        p: 2,
-                        border: "1px solid #ff3366",
-                        backgroundColor: "rgba(255, 51, 102, 0.05)",
-                    }}
-                >
-                    <Typography
-                        sx={{
-                            color: "#ff3366",
-                            fontSize: "0.8rem",
-                            fontFamily: "monospace",
-                        }}
-                    >
-                        ERROR: {error}
+                        {error}
                     </Typography>
                 </Box>
             )}
 
-            {/* Empty State */}
             {!loading && !error && devices.length === 0 && (
                 <Box
                     sx={{
                         p: 3,
-                        border: "1px solid",
-                        borderColor: "divider",
+                        borderRadius: 3,
+                        border: "1px dashed rgba(122, 162, 247, 0.35)",
                         textAlign: "center",
+                        color: "text.secondary",
+                        mb: 3,
                     }}
                 >
-                    <Typography
-                        sx={{
-                            color: "text.secondary",
-                            fontSize: "0.8rem",
-                            letterSpacing: "0.1em",
-                        }}
-                    >
-                        NO DEVICES FOUND
+                    <Typography sx={{ fontSize: "0.9rem" }}>
+                        No devices found. Connect a device and refresh.
                     </Typography>
                 </Box>
             )}
 
-            {/* Device Grid */}
             {!loading && !error && devices.length > 0 && (
                 <Box
                     sx={{
                         display: "grid",
-                        gap: 2,
+                        gap: 2.5,
                         gridTemplateColumns: {
                             xs: "1fr",
                             sm: "repeat(2, 1fr)",
@@ -246,101 +226,83 @@ export default function Home() {
                                     cursor: requestInProgress
                                         ? "not-allowed"
                                         : "pointer",
-                                    opacity: requestInProgress && !isSelected ? 0.5 : 1,
+                                    opacity:
+                                        requestInProgress && !isSelected
+                                            ? 0.6
+                                            : 1,
                                     position: "relative",
-                                    backgroundColor: isSelected
-                                        ? "rgba(0, 255, 65, 0.03)"
-                                        : "rgba(18, 18, 26, 0.6)",
+                                    borderRadius: 3,
+                                    backgroundColor: "rgba(17, 24, 37, 0.82)",
                                     border: "1px solid",
                                     borderColor: isSelected
-                                        ? "#00ff41"
-                                        : "#1a1a24",
+                                        ? "rgba(79, 209, 197, 0.6)"
+                                        : "rgba(122, 162, 247, 0.2)",
+                                    boxShadow: isSelected
+                                        ? "0 18px 40px rgba(6, 9, 16, 0.35)"
+                                        : "0 10px 28px rgba(6, 9, 16, 0.25)",
                                     transition: "all 0.2s ease",
                                     "&:hover": {
                                         borderColor: requestInProgress
                                             ? undefined
-                                            : isSelected
-                                            ? "#00ff41"
-                                            : "rgba(0, 255, 65, 0.4)",
-                                        backgroundColor: requestInProgress
+                                            : "rgba(79, 209, 197, 0.5)",
+                                        transform: requestInProgress
                                             ? undefined
-                                            : isSelected
-                                            ? "rgba(0, 255, 65, 0.05)"
-                                            : "rgba(18, 18, 26, 0.8)",
+                                            : "translateY(-4px)",
                                     },
-                                    ...(isSelected && {
-                                        boxShadow:
-                                            "0 0 20px rgba(0, 255, 65, 0.15), inset 0 0 30px rgba(0, 255, 65, 0.03)",
-                                    }),
                                 }}
                             >
-                                {/* Terminal window header */}
                                 <Box
                                     sx={{
                                         display: "flex",
                                         alignItems: "center",
                                         gap: 1,
-                                        px: 1.5,
-                                        py: 0.75,
+                                        px: 2,
+                                        py: 1.2,
                                         borderBottom: "1px solid",
-                                        borderColor: isSelected
-                                            ? "rgba(0, 255, 65, 0.2)"
-                                            : "#1a1a24",
-                                        backgroundColor: "rgba(0, 0, 0, 0.3)",
+                                        borderColor:
+                                            "rgba(122, 162, 247, 0.15)",
+                                        backgroundColor:
+                                            "rgba(10, 14, 22, 0.6)",
+                                        borderRadius: "18px 18px 0 0",
                                     }}
                                 >
-                                    {/* Window controls - pixel style */}
                                     <Box
                                         sx={{
                                             display: "flex",
-                                            gap: "4px",
+                                            gap: "6px",
                                         }}
                                     >
-                                        <Box
-                                            sx={{
-                                                width: 6,
-                                                height: 6,
-                                                backgroundColor: isSelected
-                                                    ? "#00ff41"
-                                                    : "#1a1a24",
-                                                boxShadow: isSelected
-                                                    ? "0 0 4px #00ff41"
-                                                    : "none",
-                                            }}
-                                        />
-                                        <Box
-                                            sx={{
-                                                width: 6,
-                                                height: 6,
-                                                backgroundColor: "#1a1a24",
-                                            }}
-                                        />
-                                        <Box
-                                            sx={{
-                                                width: 6,
-                                                height: 6,
-                                                backgroundColor: "#1a1a24",
-                                            }}
-                                        />
+                                        {["#f6c177", "#7aa2f7", "#4fd1c5"].map(
+                                            (color) => (
+                                                <Box
+                                                    key={color}
+                                                    sx={{
+                                                        width: 6,
+                                                        height: 6,
+                                                        borderRadius: 999,
+                                                        backgroundColor: color,
+                                                        opacity: 0.8,
+                                                    }}
+                                                />
+                                            ),
+                                        )}
                                     </Box>
                                     <Typography
                                         variant="caption"
                                         sx={{
                                             color: isSelected
-                                                ? "#00ff41"
+                                                ? "#4fd1c5"
                                                 : "text.secondary",
                                             fontSize: "0.6rem",
-                                            letterSpacing: "0.1em",
+                                            letterSpacing: "0.2em",
                                             ml: "auto",
                                         }}
                                     >
-                                        {isSelected ? "SELECTED" : "DEVICE"}
+                                        {isSelected ? "ACTIVE" : "DEVICE"}
                                     </Typography>
                                 </Box>
 
-                                {/* Device Content */}
-                                <Box sx={{ p: 2 }}>
-                                    {/* Device name with icon */}
+                                <Box sx={{ p: 2.5 }}>
                                     <Box
                                         sx={{
                                             display: "flex",
@@ -352,19 +314,17 @@ export default function Home() {
                                         {getDeviceIcon(device.os)}
                                         <Typography
                                             sx={{
-                                                fontSize: "0.9rem",
+                                                fontSize: "1rem",
                                                 fontWeight: 600,
                                                 color: isSelected
-                                                    ? "#00ff41"
+                                                    ? "#4fd1c5"
                                                     : "text.primary",
-                                                letterSpacing: "0.02em",
                                             }}
                                         >
                                             {device.name}
                                         </Typography>
                                     </Box>
 
-                                    {/* OS Info */}
                                     <Box
                                         sx={{
                                             display: "flex",
@@ -376,36 +336,35 @@ export default function Home() {
                                         <Typography
                                             variant="caption"
                                             sx={{
-                                                color: "#00ffff",
+                                                color: "#7aa2f7",
                                                 fontSize: "0.6rem",
-                                                letterSpacing: "0.1em",
+                                                letterSpacing: "0.14em",
                                             }}
                                         >
-                                            OS:
+                                            OS
                                         </Typography>
                                         <Typography
                                             sx={{
                                                 color: "text.secondary",
-                                                fontSize: "0.75rem",
+                                                fontSize: "0.8rem",
                                             }}
                                         >
                                             {capitalize(device.os)}
                                         </Typography>
                                     </Box>
 
-                                    {/* Emulators */}
                                     <Box>
                                         <Typography
                                             variant="caption"
                                             sx={{
-                                                color: "#00ffff",
+                                                color: "#7aa2f7",
                                                 fontSize: "0.6rem",
-                                                letterSpacing: "0.1em",
+                                                letterSpacing: "0.14em",
                                                 display: "block",
                                                 mb: 1,
                                             }}
                                         >
-                                            EMULATORS:
+                                            EMULATORS
                                         </Typography>
                                         <Box
                                             sx={{
@@ -415,34 +374,34 @@ export default function Home() {
                                             }}
                                         >
                                             {device.emulatorsEnabled.map(
-                                                (e) => (
+                                                (emulator) => (
                                                     <Box
-                                                        key={e}
+                                                        key={emulator}
                                                         sx={{
-                                                            px: 1,
-                                                            py: 0.25,
+                                                            px: 1.2,
+                                                            py: 0.4,
+                                                            borderRadius: 999,
                                                             fontSize: "0.65rem",
-                                                            fontFamily:
-                                                                "monospace",
+                                                            fontWeight: 600,
                                                             letterSpacing:
-                                                                "0.05em",
+                                                                "0.08em",
                                                             textTransform:
                                                                 "uppercase",
                                                             border: "1px solid",
                                                             borderColor:
                                                                 isSelected
-                                                                    ? "#00ff41"
-                                                                    : "#00ffff",
+                                                                    ? "rgba(79, 209, 197, 0.5)"
+                                                                    : "rgba(122, 162, 247, 0.35)",
                                                             color: isSelected
-                                                                ? "#00ff41"
-                                                                : "#00ffff",
+                                                                ? "#4fd1c5"
+                                                                : "#7aa2f7",
                                                             backgroundColor:
                                                                 isSelected
-                                                                    ? "rgba(0, 255, 65, 0.05)"
-                                                                    : "rgba(0, 255, 255, 0.05)",
+                                                                    ? "rgba(79, 209, 197, 0.12)"
+                                                                    : "rgba(122, 162, 247, 0.12)",
                                                         }}
                                                     >
-                                                        {capitalize(e)}
+                                                        {capitalize(emulator)}
                                                     </Box>
                                                 ),
                                             )}
@@ -450,7 +409,6 @@ export default function Home() {
                                     </Box>
                                 </Box>
 
-                                {/* Selection indicator line */}
                                 {isSelected && (
                                     <Box
                                         sx={{
@@ -458,10 +416,9 @@ export default function Home() {
                                             bottom: 0,
                                             left: 0,
                                             right: 0,
-                                            height: "2px",
+                                            height: "3px",
                                             background:
-                                                "linear-gradient(90deg, transparent 0%, #00ff41 50%, transparent 100%)",
-                                            boxShadow: "0 0 10px #00ff41",
+                                                "linear-gradient(90deg, transparent 0%, rgba(79, 209, 197, 0.8) 45%, rgba(122, 162, 247, 0.7) 70%, transparent 100%)",
                                         }}
                                     />
                                 )}

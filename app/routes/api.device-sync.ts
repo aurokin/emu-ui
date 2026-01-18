@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { ActionFunctionArgs } from "react-router";
-import type { DeviceSyncRecord, DeviceSyncResponse, EmulatorActionEntry } from "~/server/types";
+import type {
+    DeviceSyncRecord,
+    DeviceSyncResponse,
+    EmulatorActionEntry,
+} from "~/server/types";
 import { Emulator, SyncAction, SyncStatus } from "~/server/types";
 import { initializeServer, getEmuDevices, getEmuServer } from "~/server";
 import { connectionTest } from "~/server/backup";
@@ -24,14 +28,16 @@ export async function action({ request }: ActionFunctionArgs) {
 
     if (!Array.isArray(body.emulatorActions)) {
         return Response.json(
-            { error: "Missing emulatorActions (array of { emulator, action })" },
-            { status: 400 }
+            {
+                error: "Missing emulatorActions (array of { emulator, action })",
+            },
+            { status: 400 },
         );
     }
     if (body.emulatorActions.length === 0) {
         return Response.json(
             { error: "emulatorActions must include at least one entry" },
-            { status: 400 }
+            { status: 400 },
         );
     }
 
@@ -46,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 {
                     error: `Invalid emulator '${emulator}'. Must be one of: ${validEmulators.join(", ")}`,
                 },
-                { status: 400 }
+                { status: 400 },
             );
         }
         if (!validActions.includes(action as SyncAction)) {
@@ -54,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 {
                     error: `Invalid action '${action}' for emulator '${emulator}'. Must be one of: ${validActions.join(", ")}`,
                 },
-                { status: 400 }
+                { status: 400 },
             );
         }
     }
@@ -65,7 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!device) {
         return Response.json(
             { error: `Device '${body.deviceName}' not found` },
-            { status: 404 }
+            { status: 404 },
         );
     }
 
@@ -105,7 +111,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!emuServer) {
         return Response.json(
             { error: "Server info not initialized" },
-            { status: 500 }
+            { status: 500 },
         );
     }
 
@@ -119,7 +125,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 inProgressRecord.deviceSyncRequest,
                 device,
                 emuServer,
-                { jobId: id }
+                { jobId: id },
             );
             const existing =
                 (await getJSON<DeviceSyncRecord>(id)) ?? inProgressRecord;

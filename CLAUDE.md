@@ -20,13 +20,13 @@ bun run start
 
 ## Scripts
 
-| Script | Description |
-|--------|-------------|
-| `bun run dev` | Start development server with hot reload |
-| `bun run build` | Build for production |
-| `bun run start` | Serve production build |
-| `bun run typecheck` | Run TypeScript type checking |
-| `bun run format` | Format code with Prettier |
+| Script              | Description                              |
+| ------------------- | ---------------------------------------- |
+| `bun run dev`       | Start development server with hot reload |
+| `bun run build`     | Build for production                     |
+| `bun run start`     | Serve production build                   |
+| `bun run typecheck` | Run TypeScript type checking             |
+| `bun run format`    | Format code with Prettier                |
 
 ## Tech Stack
 

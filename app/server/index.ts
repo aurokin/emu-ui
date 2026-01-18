@@ -1,8 +1,4 @@
-import type {
-    SimpleDevice,
-    EmuDevice,
-    EmuServer,
-} from "./types";
+import type { SimpleDevice, EmuDevice, EmuServer } from "./types";
 import { connectRedis } from "./redis";
 import { parseInfo, shouldLaunch } from "./verification";
 import { convertEmuDeviceToSimpleDevice } from "./utility";
@@ -40,7 +36,9 @@ export const initializeServer = async (): Promise<void> => {
             }
             emuDevices.push(...devices);
             simpleDevices.push(
-                ...devices.map((device) => convertEmuDeviceToSimpleDevice(device)),
+                ...devices.map((device) =>
+                    convertEmuDeviceToSimpleDevice(device),
+                ),
             );
 
             initialized = true;

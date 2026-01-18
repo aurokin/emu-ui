@@ -22,18 +22,19 @@ function TerminalLoader() {
                     sx={{
                         width: 6,
                         height: 6,
-                        backgroundColor: "#00ff41",
-                        animation: "loader-pulse 1.4s ease-in-out infinite",
+                        borderRadius: 999,
+                        backgroundColor: "#f6c177",
+                        animation: "loader-bounce 1.2s ease-in-out infinite",
                         animationDelay: `${i * 0.2}s`,
-                        "@keyframes loader-pulse": {
-                            "0%, 80%, 100%": {
-                                transform: "scale(0.6)",
+                        "@keyframes loader-bounce": {
+                            "0%, 100%": {
+                                transform: "scale(0.8)",
                                 opacity: 0.4,
                             },
-                            "40%": {
+                            "50%": {
                                 transform: "scale(1)",
                                 opacity: 1,
-                                boxShadow: "0 0 10px #00ff41",
+                                boxShadow: "0 0 10px rgba(246, 193, 119, 0.6)",
                             },
                         },
                     }}
@@ -108,7 +109,8 @@ export function EmulatorActionForm() {
     useEffect(() => {
         if (
             deviceSyncResponse &&
-            deviceSyncResponse.deviceSyncRecord.status === SyncStatus.IN_PROGRESS
+            deviceSyncResponse.deviceSyncRecord.status ===
+                SyncStatus.IN_PROGRESS
         ) {
             const id = deviceSyncResponse.id;
             const interval = setInterval(async () => {
@@ -155,38 +157,45 @@ export function EmulatorActionForm() {
         (emu) =>
             emulatorActions[emu] === "push" || emulatorActions[emu] === "pull",
     );
+    const isActionDisabled = requestInProgress || !hasActions;
+    const statusColor = deviceSyncResponse
+        ? deviceSyncResponse.deviceSyncRecord.status === SyncStatus.IN_PROGRESS
+            ? "#f6c177"
+            : deviceSyncResponse.deviceSyncRecord.status === SyncStatus.COMPLETE
+              ? "#4fd1c5"
+              : "#f28fad"
+        : "#7aa2f7";
 
     return (
         <Box
             sx={{
                 mt: 4,
-                border: "1px solid #1a1a24",
-                backgroundColor: "rgba(18, 18, 26, 0.8)",
+                border: "1px solid rgba(122, 162, 247, 0.2)",
+                borderRadius: "18px",
+                backgroundColor: "rgba(17, 24, 37, 0.84)",
+                boxShadow: "0 18px 40px rgba(6, 9, 16, 0.35)",
                 position: "relative",
                 overflow: "hidden",
             }}
         >
-            {/* Top glow line */}
             <Box
                 sx={{
                     position: "absolute",
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: "1px",
+                    height: "2px",
                     background:
-                        "linear-gradient(90deg, transparent 0%, #00ff41 20%, #00ffff 50%, #00ff41 80%, transparent 100%)",
-                    opacity: 0.5,
+                        "linear-gradient(90deg, transparent 0%, rgba(79, 209, 197, 0.7) 30%, rgba(122, 162, 247, 0.7) 70%, transparent 100%)",
                 }}
             />
 
-            {/* Header */}
             <Box
                 sx={{
-                    px: 2,
-                    py: 1.5,
-                    borderBottom: "1px solid #1a1a24",
-                    backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    px: 3,
+                    py: 2,
+                    borderBottom: "1px solid rgba(122, 162, 247, 0.2)",
+                    backgroundColor: "rgba(12, 16, 27, 0.6)",
                     display: "flex",
                     alignItems: "center",
                     gap: 2,
@@ -195,39 +204,36 @@ export function EmulatorActionForm() {
                 <Typography
                     variant="caption"
                     sx={{
-                        color: "#00ffff",
-                        letterSpacing: "0.15em",
-                        fontSize: "0.6rem",
+                        color: "#7aa2f7",
+                        letterSpacing: "0.2em",
+                        fontSize: "0.65rem",
                     }}
                 >
-                    CONFIG://
+                    CONFIGURATION
                 </Typography>
                 <Typography
                     sx={{
-                        fontFamily: '"Press Start 2P", monospace',
-                        fontSize: "0.7rem",
-                        color: "#00ff41",
-                        textShadow: "0 0 10px rgba(0, 255, 65, 0.5)",
-                        letterSpacing: "0.05em",
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        letterSpacing: "0.02em",
                     }}
                 >
-                    SYNC_ACTIONS
+                    Sync actions
                 </Typography>
                 <Box sx={{ flexGrow: 1 }} />
                 <Typography
                     sx={{
                         color: "text.secondary",
-                        fontSize: "0.7rem",
-                        letterSpacing: "0.05em",
+                        fontSize: "0.75rem",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
                     }}
                 >
                     {selectedDeviceData.name}
                 </Typography>
             </Box>
 
-            {/* Content */}
-            <Box sx={{ p: 3 }}>
-                {/* Instructions */}
+            <Box sx={{ p: { xs: 2.5, md: 3 } }}>
                 <Box
                     sx={{
                         display: "flex",
@@ -236,19 +242,25 @@ export function EmulatorActionForm() {
                         mb: 3,
                     }}
                 >
-                    <Box sx={{ color: "#00ff41", opacity: 0.7 }}>{">"}</Box>
+                    <Box
+                        sx={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: 999,
+                            backgroundColor: "#7aa2f7",
+                        }}
+                    />
                     <Typography
                         sx={{
                             color: "text.secondary",
-                            fontSize: "0.75rem",
-                            letterSpacing: "0.02em",
+                            fontSize: "0.85rem",
                         }}
                     >
-                        Configure sync action for each emulator
+                        Configure sync behavior for each emulator before running
+                        the transfer.
                     </Typography>
                 </Box>
 
-                {/* Emulator Actions Grid */}
                 <Box
                     sx={{
                         display: "flex",
@@ -256,276 +268,286 @@ export function EmulatorActionForm() {
                         gap: 2,
                     }}
                 >
-                    {selectedDeviceData.emulatorsEnabled.map((emulator) => (
-                        <Box
-                            key={emulator}
-                            sx={{
-                                display: "flex",
-                                flexDirection: { xs: "column", sm: "row" },
-                                alignItems: { xs: "stretch", sm: "center" },
-                                gap: 2,
-                                p: 2,
-                                backgroundColor: "rgba(0, 0, 0, 0.2)",
-                                border: "1px solid #1a1a24",
-                            }}
-                        >
-                            {/* Emulator name */}
+                    {selectedDeviceData.emulatorsEnabled.map((emulator) => {
+                        const indicatorColor =
+                            emulatorActions[emulator] === "ignore"
+                                ? "rgba(169, 178, 199, 0.5)"
+                                : emulatorActions[emulator] === "push"
+                                  ? "#f6c177"
+                                  : "#7aa2f7";
+                        const actionColors = {
+                            ignore: {
+                                border: "rgba(169, 178, 199, 0.4)",
+                                bg: "rgba(169, 178, 199, 0.12)",
+                                color: "#a9b2c7",
+                                shadow: "rgba(169, 178, 199, 0.2)",
+                            },
+                            push: {
+                                border: "rgba(246, 193, 119, 0.6)",
+                                bg: "rgba(246, 193, 119, 0.18)",
+                                color: "#f6c177",
+                                shadow: "rgba(246, 193, 119, 0.35)",
+                            },
+                            pull: {
+                                border: "rgba(122, 162, 247, 0.6)",
+                                bg: "rgba(122, 162, 247, 0.18)",
+                                color: "#7aa2f7",
+                                shadow: "rgba(122, 162, 247, 0.35)",
+                            },
+                        };
+
+                        return (
                             <Box
+                                key={emulator}
                                 sx={{
-                                    minWidth: 120,
                                     display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
+                                    flexDirection: { xs: "column", sm: "row" },
+                                    alignItems: {
+                                        xs: "stretch",
+                                        sm: "center",
+                                    },
+                                    gap: 2,
+                                    p: 2,
+                                    borderRadius: "14px",
+                                    backgroundColor: "rgba(10, 14, 22, 0.6)",
+                                    border: "1px solid rgba(122, 162, 247, 0.15)",
                                 }}
                             >
                                 <Box
                                     sx={{
-                                        width: 4,
-                                        height: 4,
-                                        backgroundColor:
-                                            emulatorActions[emulator] ===
-                                            "ignore"
-                                                ? "#1a1a24"
-                                                : emulatorActions[emulator] ===
-                                                  "push"
-                                                ? "#00ff41"
-                                                : "#00ffff",
-                                        boxShadow:
-                                            emulatorActions[emulator] !==
-                                            "ignore"
-                                                ? `0 0 6px ${
-                                                      emulatorActions[
-                                                          emulator
-                                                      ] === "push"
-                                                          ? "#00ff41"
-                                                          : "#00ffff"
-                                                  }`
-                                                : "none",
-                                    }}
-                                />
-                                <Typography
-                                    sx={{
-                                        color:
-                                            emulatorActions[emulator] ===
-                                            "ignore"
-                                                ? "text.secondary"
-                                                : "#00ffff",
-                                        fontSize: "0.8rem",
-                                        fontWeight: 600,
-                                        letterSpacing: "0.05em",
-                                        textTransform: "uppercase",
+                                        minWidth: 140,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1.2,
                                     }}
                                 >
-                                    {capitalize(emulator)}
-                                </Typography>
-                            </Box>
+                                    <Box
+                                        sx={{
+                                            width: 10,
+                                            height: 10,
+                                            borderRadius: 999,
+                                            backgroundColor: indicatorColor,
+                                            boxShadow:
+                                                indicatorColor ===
+                                                "rgba(169, 178, 199, 0.5)"
+                                                    ? "none"
+                                                    : `0 0 12px ${indicatorColor}`,
+                                        }}
+                                    />
+                                    <Typography
+                                        sx={{
+                                            color:
+                                                emulatorActions[emulator] ===
+                                                "ignore"
+                                                    ? "text.secondary"
+                                                    : "text.primary",
+                                            fontSize: "0.8rem",
+                                            fontWeight: 600,
+                                            letterSpacing: "0.06em",
+                                            textTransform: "uppercase",
+                                        }}
+                                    >
+                                        {capitalize(emulator)}
+                                    </Typography>
+                                </Box>
 
-                            {/* Action buttons */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    gap: 1,
-                                    flexWrap: "wrap",
-                                }}
-                            >
-                                {(
-                                    ["ignore", "push", "pull"] as EmulatorAction[]
-                                ).map((action) => {
-                                    const isSelected =
-                                        emulatorActions[emulator] === action;
-                                    const actionColors = {
-                                        ignore: {
-                                            border: "#3a3a4a",
-                                            bg: "rgba(58, 58, 74, 0.2)",
-                                            color: "#888899",
-                                        },
-                                        push: {
-                                            border: "#00ff41",
-                                            bg: "rgba(0, 255, 65, 0.1)",
-                                            color: "#00ff41",
-                                        },
-                                        pull: {
-                                            border: "#00ffff",
-                                            bg: "rgba(0, 255, 255, 0.1)",
-                                            color: "#00ffff",
-                                        },
-                                    };
-                                    const colors = actionColors[action];
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                                    {(
+                                        [
+                                            "ignore",
+                                            "push",
+                                            "pull",
+                                        ] as EmulatorAction[]
+                                    ).map((action) => {
+                                        const isSelected =
+                                            emulatorActions[emulator] ===
+                                            action;
+                                        const colors = actionColors[action];
 
-                                    return (
-                                        <Box
-                                            key={action}
-                                            onClick={() =>
-                                                handleActionChange(
-                                                    emulator,
-                                                    action,
-                                                )
-                                            }
-                                            sx={{
-                                                px: 2,
-                                                py: 0.75,
-                                                cursor: "pointer",
-                                                border: "1px solid",
-                                                borderColor: isSelected
-                                                    ? colors.border
-                                                    : "#1a1a24",
-                                                backgroundColor: isSelected
-                                                    ? colors.bg
-                                                    : "transparent",
-                                                color: isSelected
-                                                    ? colors.color
-                                                    : "text.secondary",
-                                                fontSize: "0.7rem",
-                                                fontFamily: "monospace",
-                                                letterSpacing: "0.1em",
-                                                textTransform: "uppercase",
-                                                transition: "all 0.2s ease",
-                                                "&:hover": {
-                                                    borderColor: colors.border,
-                                                    backgroundColor:
-                                                        action === "ignore"
-                                                            ? "rgba(58, 58, 74, 0.3)"
-                                                            : colors.bg,
-                                                },
-                                                ...(isSelected &&
-                                                    action !== "ignore" && {
-                                                        boxShadow: `0 0 10px ${colors.border}40`,
+                                        return (
+                                            <Box
+                                                key={action}
+                                                onClick={() =>
+                                                    handleActionChange(
+                                                        emulator,
+                                                        action,
+                                                    )
+                                                }
+                                                sx={{
+                                                    px: 2,
+                                                    py: 0.7,
+                                                    cursor: "pointer",
+                                                    borderRadius: 999,
+                                                    border: "1px solid",
+                                                    borderColor: isSelected
+                                                        ? colors.border
+                                                        : "rgba(122, 162, 247, 0.2)",
+                                                    backgroundColor: isSelected
+                                                        ? colors.bg
+                                                        : "rgba(12, 16, 27, 0.4)",
+                                                    color: isSelected
+                                                        ? colors.color
+                                                        : "text.secondary",
+                                                    fontSize: "0.7rem",
+                                                    fontWeight: 600,
+                                                    letterSpacing: "0.12em",
+                                                    textTransform: "uppercase",
+                                                    transition: "all 0.2s ease",
+                                                    "&:hover": {
+                                                        borderColor:
+                                                            colors.border,
+                                                        backgroundColor:
+                                                            colors.bg,
+                                                        color: colors.color,
+                                                    },
+                                                    ...(isSelected && {
+                                                        boxShadow: `0 10px 22px ${colors.shadow}`,
                                                     }),
-                                            }}
-                                        >
-                                            {action}
-                                        </Box>
-                                    );
-                                })}
+                                                }}
+                                            >
+                                                {action}
+                                            </Box>
+                                        );
+                                    })}
+                                </Box>
                             </Box>
-                        </Box>
-                    ))}
+                        );
+                    })}
                 </Box>
 
-                {/* Divider */}
                 <Box
                     sx={{
                         my: 3,
                         height: "1px",
                         background:
-                            "linear-gradient(90deg, transparent 0%, #1a1a24 20%, #1a1a24 80%, transparent 100%)",
+                            "linear-gradient(90deg, transparent 0%, rgba(122, 162, 247, 0.3) 50%, transparent 100%)",
                     }}
                 />
 
-                {/* Action buttons */}
                 <Box
                     sx={{
                         display: "flex",
                         justifyContent: "flex-end",
                         gap: 1.5,
+                        flexWrap: "wrap",
                     }}
                 >
                     <Box
                         component="button"
                         onClick={() => {
-                            const resetActions: { [key: string]: EmulatorAction } = {};
-                            selectedDeviceData.emulatorsEnabled.forEach((emulator) => {
-                                resetActions[emulator] = "ignore";
-                            });
+                            const resetActions: {
+                                [key: string]: EmulatorAction;
+                            } = {};
+                            selectedDeviceData.emulatorsEnabled.forEach(
+                                (emulator) => {
+                                    resetActions[emulator] = "ignore";
+                                },
+                            );
                             setEmulatorActions(resetActions);
                         }}
-                        disabled={requestInProgress || !hasActions}
+                        disabled={isActionDisabled}
                         sx={{
-                            px: 2,
+                            px: 2.5,
                             py: 1,
+                            borderRadius: 999,
                             border: "1px solid",
-                            borderColor:
-                                requestInProgress || !hasActions
-                                    ? "#1a1a24"
-                                    : "#3a3a4a",
-                            backgroundColor: "transparent",
-                            color:
-                                requestInProgress || !hasActions
-                                    ? "#3a3a4a"
-                                    : "#888899",
+                            borderColor: isActionDisabled
+                                ? "rgba(122, 162, 247, 0.15)"
+                                : "rgba(122, 162, 247, 0.35)",
+                            backgroundColor: "rgba(122, 162, 247, 0.08)",
+                            color: isActionDisabled
+                                ? "rgba(169, 178, 199, 0.5)"
+                                : "text.secondary",
                             fontSize: "0.75rem",
-                            fontFamily: '"JetBrains Mono", monospace',
-                            fontWeight: 500,
-                            letterSpacing: "0.1em",
+                            fontFamily: '"Hanken Grotesk", sans-serif',
+                            fontWeight: 600,
+                            letterSpacing: "0.12em",
                             textTransform: "uppercase",
-                            cursor:
-                                requestInProgress || !hasActions
-                                    ? "not-allowed"
-                                    : "pointer",
+                            cursor: isActionDisabled
+                                ? "not-allowed"
+                                : "pointer",
                             transition: "all 0.2s ease",
                             "&:hover:not(:disabled)": {
-                                borderColor: "#888899",
-                                color: "#e0e0e0",
+                                borderColor: "rgba(79, 209, 197, 0.5)",
+                                color: "#eef1f7",
                             },
                         }}
                     >
-                        RESET
+                        Reset
                     </Box>
                     <Box
                         component="button"
                         onClick={handleSubmit}
-                        disabled={requestInProgress || !hasActions}
+                        disabled={isActionDisabled}
                         sx={{
                             px: 3,
                             py: 1,
+                            borderRadius: 999,
                             border: "1px solid",
-                            borderColor:
-                                requestInProgress || !hasActions
-                                    ? "#1a1a24"
-                                    : "#00ff41",
-                            backgroundColor:
-                                requestInProgress || !hasActions
-                                    ? "transparent"
-                                    : "#00ff41",
-                            color:
-                                requestInProgress || !hasActions
-                                    ? "text.secondary"
-                                    : "#0a0a0c",
-                            fontSize: "0.75rem",
-                            fontFamily: '"JetBrains Mono", monospace',
-                            fontWeight: 600,
-                            letterSpacing: "0.1em",
+                            borderColor: isActionDisabled
+                                ? "rgba(122, 162, 247, 0.15)"
+                                : "rgba(246, 193, 119, 0.6)",
+                            backgroundImage: isActionDisabled
+                                ? "none"
+                                : "linear-gradient(135deg, #f6c177 0%, #f28fad 100%)",
+                            backgroundColor: isActionDisabled
+                                ? "rgba(122, 162, 247, 0.08)"
+                                : undefined,
+                            color: isActionDisabled
+                                ? "rgba(169, 178, 199, 0.6)"
+                                : "#0b0f17",
+                            fontSize: "0.8rem",
+                            fontFamily: '"Hanken Grotesk", sans-serif',
+                            fontWeight: 700,
+                            letterSpacing: "0.12em",
                             textTransform: "uppercase",
-                            cursor:
-                                requestInProgress || !hasActions
-                                    ? "not-allowed"
-                                    : "pointer",
+                            cursor: isActionDisabled
+                                ? "not-allowed"
+                                : "pointer",
                             transition: "all 0.2s ease",
                             display: "flex",
                             alignItems: "center",
                             gap: 1,
+                            boxShadow: isActionDisabled
+                                ? "none"
+                                : "0 12px 28px rgba(246, 193, 119, 0.35)",
                             "&:hover:not(:disabled)": {
+                                transform: "translateY(-1px)",
                                 boxShadow:
-                                    "0 0 15px rgba(0, 255, 65, 0.5), 0 0 30px rgba(0, 255, 65, 0.3)",
+                                    "0 16px 32px rgba(246, 193, 119, 0.45)",
                             },
                         }}
                     >
                         {requestInProgress ? (
                             <>
                                 <TerminalLoader />
-                                <span>SYNCING</span>
+                                <span>Syncing</span>
                             </>
                         ) : (
-                            "EXECUTE SYNC"
+                            "Execute Sync"
                         )}
                     </Box>
                 </Box>
             </Box>
 
-            {/* Response Section */}
             {deviceSyncResponse && (
                 <Box
                     sx={{
-                        borderTop: "1px solid #1a1a24",
-                        backgroundColor: "rgba(0, 0, 0, 0.4)",
+                        borderTop: "1px solid rgba(122, 162, 247, 0.2)",
+                        backgroundColor: "rgba(10, 14, 22, 0.6)",
                     }}
                 >
-                    {/* Response Header */}
                     <Box
                         sx={{
-                            px: 2,
-                            py: 1,
-                            borderBottom: "1px solid #1a1a24",
+                            px: 3,
+                            py: 1.6,
+                            borderBottom: "1px solid rgba(122, 162, 247, 0.2)",
                             display: "flex",
                             alignItems: "center",
                             gap: 2,
@@ -534,12 +556,12 @@ export function EmulatorActionForm() {
                         <Typography
                             variant="caption"
                             sx={{
-                                color: "#00ffff",
-                                letterSpacing: "0.15em",
+                                color: "#7aa2f7",
+                                letterSpacing: "0.2em",
                                 fontSize: "0.6rem",
                             }}
                         >
-                            RESPONSE://
+                            RESPONSE
                         </Typography>
                         <Box
                             sx={{
@@ -550,25 +572,11 @@ export function EmulatorActionForm() {
                         >
                             <Box
                                 sx={{
-                                    width: 6,
-                                    height: 6,
-                                    backgroundColor:
-                                        deviceSyncResponse.deviceSyncRecord
-                                            .status === SyncStatus.IN_PROGRESS
-                                            ? "#ffb000"
-                                            : deviceSyncResponse.deviceSyncRecord
-                                                  .status === SyncStatus.COMPLETE
-                                            ? "#00ff41"
-                                            : "#ff3366",
-                                    boxShadow: `0 0 6px ${
-                                        deviceSyncResponse.deviceSyncRecord
-                                            .status === SyncStatus.IN_PROGRESS
-                                            ? "#ffb000"
-                                            : deviceSyncResponse.deviceSyncRecord
-                                                  .status === SyncStatus.COMPLETE
-                                            ? "#00ff41"
-                                            : "#ff3366"
-                                    }`,
+                                    width: 8,
+                                    height: 8,
+                                    borderRadius: 999,
+                                    backgroundColor: statusColor,
+                                    boxShadow: `0 0 12px ${statusColor}66`,
                                     animation:
                                         deviceSyncResponse.deviceSyncRecord
                                             .status === SyncStatus.IN_PROGRESS
@@ -582,17 +590,10 @@ export function EmulatorActionForm() {
                             />
                             <Typography
                                 sx={{
-                                    fontSize: "0.7rem",
-                                    fontWeight: 600,
-                                    letterSpacing: "0.1em",
-                                    color:
-                                        deviceSyncResponse.deviceSyncRecord
-                                            .status === SyncStatus.IN_PROGRESS
-                                            ? "#ffb000"
-                                            : deviceSyncResponse.deviceSyncRecord
-                                                  .status === SyncStatus.COMPLETE
-                                            ? "#00ff41"
-                                            : "#ff3366",
+                                    fontSize: "0.75rem",
+                                    fontWeight: 700,
+                                    letterSpacing: "0.12em",
+                                    color: statusColor,
                                 }}
                             >
                                 {deviceSyncResponse.deviceSyncRecord.status}
@@ -602,29 +603,27 @@ export function EmulatorActionForm() {
                         <Typography
                             sx={{
                                 color: "text.secondary",
-                                fontSize: "0.6rem",
-                                fontFamily: "monospace",
+                                fontSize: "0.65rem",
+                                fontFamily: '"JetBrains Mono", monospace',
                             }}
                         >
                             ID: {deviceSyncResponse.id}
                         </Typography>
                     </Box>
 
-                    {/* Response Content */}
-                    <Box sx={{ p: 2 }}>
-                        {/* Actions list */}
-                        <Box sx={{ mb: 2 }}>
+                    <Box sx={{ p: { xs: 2.5, md: 3 } }}>
+                        <Box sx={{ mb: 2.5 }}>
                             <Typography
                                 variant="caption"
                                 sx={{
-                                    color: "#00ffff",
+                                    color: "#7aa2f7",
                                     fontSize: "0.6rem",
-                                    letterSpacing: "0.1em",
+                                    letterSpacing: "0.2em",
                                     display: "block",
                                     mb: 1,
                                 }}
                             >
-                                EXECUTED ACTIONS:
+                                EXECUTED ACTIONS
                             </Typography>
                             <Box
                                 sx={{
@@ -639,19 +638,25 @@ export function EmulatorActionForm() {
                                             key={item.emulator}
                                             sx={{
                                                 px: 1.5,
-                                                py: 0.5,
+                                                py: 0.6,
+                                                borderRadius: 999,
                                                 border: "1px solid",
                                                 borderColor:
                                                     item.action === "push"
-                                                        ? "#00ff41"
-                                                        : "#00ffff",
+                                                        ? "rgba(246, 193, 119, 0.6)"
+                                                        : "rgba(122, 162, 247, 0.6)",
                                                 color:
                                                     item.action === "push"
-                                                        ? "#00ff41"
-                                                        : "#00ffff",
+                                                        ? "#f6c177"
+                                                        : "#7aa2f7",
                                                 fontSize: "0.65rem",
-                                                fontFamily: "monospace",
-                                                letterSpacing: "0.05em",
+                                                fontWeight: 600,
+                                                letterSpacing: "0.08em",
+                                                textTransform: "uppercase",
+                                                backgroundColor:
+                                                    item.action === "push"
+                                                        ? "rgba(246, 193, 119, 0.12)"
+                                                        : "rgba(122, 162, 247, 0.12)",
                                             }}
                                         >
                                             {capitalize(item.emulator)}:{" "}
@@ -662,32 +667,34 @@ export function EmulatorActionForm() {
                             </Box>
                         </Box>
 
-                        {/* Output */}
                         {deviceSyncResponse.deviceSyncRecord.output?.length ? (
                             <Box>
                                 <Typography
                                     variant="caption"
                                     sx={{
-                                        color: "#00ffff",
+                                        color: "#7aa2f7",
                                         fontSize: "0.6rem",
-                                        letterSpacing: "0.1em",
+                                        letterSpacing: "0.2em",
                                         display: "block",
                                         mb: 1,
                                     }}
                                 >
-                                    OUTPUT:
+                                    OUTPUT
                                 </Typography>
                                 <Box
                                     component="pre"
                                     sx={{
                                         m: 0,
                                         p: 2,
-                                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                        border: "1px solid #1a1a24",
-                                        fontSize: "0.7rem",
-                                        fontFamily: '"JetBrains Mono", monospace',
-                                        lineHeight: 1.6,
-                                        color: "#00cc33",
+                                        borderRadius: "12px",
+                                        backgroundColor:
+                                            "rgba(9, 12, 19, 0.75)",
+                                        border: "1px solid rgba(122, 162, 247, 0.2)",
+                                        fontSize: "0.75rem",
+                                        fontFamily:
+                                            '"JetBrains Mono", monospace',
+                                        lineHeight: 1.7,
+                                        color: "#eef1f7",
                                         overflowX: "auto",
                                         maxHeight: 300,
                                         "&::-webkit-scrollbar": {
@@ -695,10 +702,11 @@ export function EmulatorActionForm() {
                                             height: 6,
                                         },
                                         "&::-webkit-scrollbar-track": {
-                                            backgroundColor: "#0a0a0c",
+                                            backgroundColor: "#0b0f17",
                                         },
                                         "&::-webkit-scrollbar-thumb": {
-                                            backgroundColor: "#1a1a24",
+                                            backgroundColor:
+                                                "rgba(122, 162, 247, 0.35)",
                                         },
                                     }}
                                 >

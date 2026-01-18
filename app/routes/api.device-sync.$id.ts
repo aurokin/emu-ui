@@ -17,7 +17,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
         if (!record) {
             return Response.json(
                 { error: `Record '${id}' not found` },
-                { status: 404 }
+                { status: 404 },
             );
         }
         const response: DeviceSyncResponse = { id, deviceSyncRecord: record };
@@ -26,7 +26,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
         console.error("Failed to retrieve record:", err);
         return Response.json(
             { error: "Failed to retrieve record" },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
