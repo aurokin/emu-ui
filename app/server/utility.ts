@@ -24,9 +24,7 @@ export const convertEmuDeviceToSimpleDevice = (
         has(device.dolphinGC) &&
         has(device.dolphinWii);
     const dolphinAndroid =
-        device.os === EmuOs.android &&
-        has(device.dolphinDroid) &&
-        has(device.dolphinDroidDump);
+        device.os === EmuOs.android && has(device.dolphinDroidDump);
     if (dolphinDesktop || dolphinAndroid)
         emulatorsEnabled.push(Emulator.dolphin);
 

@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { spawn } from "node:child_process";
 import type { EmuDevice, EmuServer } from "./types";
 import { EmuOs } from "./types";
 import { getSyncTypeForOs } from "./utility";
@@ -14,6 +15,26 @@ const loadDatabase = async (): Promise<Database> => {
     const dbPath = process.env.DB_PATH || "./db.json";
     const content = await fs.readFile(dbPath, "utf-8");
     return JSON.parse(content) as Database;
+};
+
+const hasBinary = async (binary: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+        const proc = spawn("bash", ["-c", `command -v ${binary}`]);
+        proc.on("error", () => resolve(false));
+        proc.on("exit", (code) => resolve(code === 0));
+    });
+};
+
+const serverHasBinaries = async (binaries: string[]) => {
+    const results = await Promise.all(
+        binaries.map((binary) => hasBinary(binary)),
+    );
+    const missing = binaries.filter((_, index) => !results[index]);
+    if (missing.length > 0) {
+        console.error(`Missing required binaries: ${missing.join(", ")}`);
+        return false;
+    }
+    return true;
 };
 
 const isEmuDevice = (device: unknown): device is EmuDevice => {
@@ -81,12 +102,7 @@ export const verifyDevices = (devices: unknown[]): EmuDevice[] => {
         .map((device) => {
             const os = parseOs(device.os as string);
             return { ...device, os, syncType: getSyncTypeForOs(os) };
-        })
-        .filter(
-            (device) =>
-                device.os !== EmuOs.android ||
-                typeof device.androidScripts === "string",
-        );
+        });
 
     const sortedDevices = verifiedDevices.sort((a, b) => {
         if (a.name > b.name) {
@@ -147,9 +163,9 @@ export const parseInfo = async () => {
 };
 
 export const shouldLaunch = async (serverInfo: EmuServer) => {
-    const valid = await serverHasFolders(serverInfo);
-    if (!valid) {
-        return false;
-    }
-    return true;
+    const [foldersOk, binariesOk] = await Promise.all([
+        serverHasFolders(serverInfo),
+        serverHasBinaries(["zip", "unzip"]),
+    ]);
+    return foldersOk && binariesOk;
 };

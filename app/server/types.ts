@@ -12,12 +12,10 @@ export type EmuDevice = {
     password: string;
     os: EmuOs;
     syncType: SyncType;
-    androidScripts: string | undefined;
     cemuSave: string | undefined;
     citraNand: string | undefined;
     citraSdmc: string | undefined;
     citraSysdata: string | undefined;
-    dolphinDroid: string | undefined;
     dolphinDroidDump: string | undefined;
     dolphinGC: string | undefined;
     dolphinWii: string | undefined;

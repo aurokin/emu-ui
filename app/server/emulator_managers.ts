@@ -101,35 +101,8 @@ const manageDolphin = (
                 ...simpleManage(serverInfo.dolphinWii, device.dolphinWii, push),
             );
         return pairs;
-    } else {
-        if (push) {
-            const pairs: SyncPair[] = [];
-            if (device.dolphinDroidDump) {
-                pairs.push({
-                    source: serverInfo.dolphinGC,
-                    target: `${device.dolphinDroidDump}/GC`,
-                });
-                pairs.push({
-                    source: serverInfo.dolphinWii,
-                    target: `${device.dolphinDroidDump}/Wii`,
-                });
-            }
-            return pairs;
-        } else {
-            const pairs: SyncPair[] = [];
-            if (device.dolphinDroid) {
-                pairs.push({
-                    source: `${device.dolphinDroid}/GC`,
-                    target: serverInfo.dolphinGC,
-                });
-                pairs.push({
-                    source: `${device.dolphinDroid}/Wii`,
-                    target: serverInfo.dolphinWii,
-                });
-            }
-            return pairs;
-        }
     }
+    return [];
 };
 
 const manageMupenFz = (

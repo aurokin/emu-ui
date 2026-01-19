@@ -57,6 +57,7 @@
 ## Local Setup
 
 - Redis is required for server flows; default is `redis://localhost:6379`.
+- Server startup requires `zip`/`unzip` on `PATH` (Dolphin Android sync).
 - Override Redis with `REDIS_URL` in environment when needed.
 - Document env vars in `.env.example` and never commit secrets.
 
