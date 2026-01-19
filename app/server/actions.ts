@@ -16,17 +16,20 @@ import {
 } from "./backup";
 import { getManageFn } from "./emulator_managers";
 
-const DOLPHIN_ANDROID_ZIP = "dolphin_emu.zip";
+const DOLPHIN_ANDROID_BASE_ZIP = "dolphin-emu.zip";
+const DOLPHIN_ANDROID_EXPORT_ZIP = "dolphin-export.zip";
 const DOLPHIN_ANDROID_DIR = "dolphin_emu";
 
 const getDolphinAndroidPaths = (serverInfo: EmuServer) => {
     const workDir = serverInfo.workDir;
     const extractDir = path.posix.join(workDir, DOLPHIN_ANDROID_DIR);
-    const zipPath = path.posix.join(workDir, DOLPHIN_ANDROID_ZIP);
+    const baseZipPath = path.posix.join(workDir, DOLPHIN_ANDROID_BASE_ZIP);
+    const exportZipPath = path.posix.join(workDir, DOLPHIN_ANDROID_EXPORT_ZIP);
     return {
         workDir,
         extractDir,
-        zipPath,
+        baseZipPath,
+        exportZipPath,
         gcPath: path.posix.join(extractDir, "GC"),
         wiiPath: path.posix.join(extractDir, "Wii"),
     };
@@ -47,7 +50,7 @@ const ensureDolphinAndroidData = async (extractDir: string) => {
 
 const safeCleanupDolphinAndroidWork = async (
     extractDir: string,
-    zipPath: string,
+    zipPaths: string[],
     jobId?: string,
 ) => {
     try {
@@ -55,10 +58,12 @@ const safeCleanupDolphinAndroidWork = async (
     } catch (err) {
         console.error("Failed to clean Dolphin work dir", err);
     }
-    try {
-        await createCmd(`rm -f "${zipPath}"`, false, jobId);
-    } catch (err) {
-        console.error("Failed to clean Dolphin zip", err);
+    for (const zipPath of zipPaths) {
+        try {
+            await createCmd(`rm -f "${zipPath}"`, false, jobId);
+        } catch (err) {
+            console.error("Failed to clean Dolphin zip", err);
+        }
     }
 };
 
@@ -68,15 +73,39 @@ const pushDolphinAndroid = async (
     jobId?: string,
 ) => {
     if (!device.dolphinDroidDump) return;
-    const { workDir, extractDir, zipPath } = getDolphinAndroidPaths(serverInfo);
-    const remoteZipPath = `${device.dolphinDroidDump}/${DOLPHIN_ANDROID_ZIP}`;
+    const { workDir, extractDir, baseZipPath, exportZipPath } =
+        getDolphinAndroidPaths(serverInfo);
+    const remoteBaseZipPath = `${device.dolphinDroidDump}/${DOLPHIN_ANDROID_BASE_ZIP}`;
+    const remoteExportZipPath = `${device.dolphinDroidDump}/${DOLPHIN_ANDROID_EXPORT_ZIP}`;
 
     await createCmd(`mkdir -p "${workDir}"`, false, jobId);
     await createCmd(`rm -rf "${extractDir}"`, false, jobId);
-    await createCmd(`rm -f "${zipPath}"`, false, jobId);
+    await createCmd(`rm -f "${baseZipPath}"`, false, jobId);
+    await createCmd(`rm -f "${exportZipPath}"`, false, jobId);
+
+    await createCmd(
+        buildSshCommand(
+            device,
+            `if [ ! -f "${remoteBaseZipPath}" ]; then echo "missing dolphin zip" >&2; exit 1; fi`,
+        ),
+        false,
+        jobId,
+    );
 
     try {
+        await createCmd(
+            buildScpCommand(device, remoteBaseZipPath, baseZipPath, false),
+            false,
+            jobId,
+        );
         await createCmd(`mkdir -p "${extractDir}"`, false, jobId);
+        await createCmd(
+            `unzip -o "${baseZipPath}" -d "${extractDir}"`,
+            false,
+            jobId,
+        );
+        const { gcPath, wiiPath } = await ensureDolphinAndroidData(extractDir);
+        await createCmd(`rm -rf "${gcPath}" "${wiiPath}"`, false, jobId);
         await createCmd(
             `cp -r "${serverInfo.dolphinGC}" "${extractDir}"`,
             false,
@@ -88,17 +117,26 @@ const pushDolphinAndroid = async (
             jobId,
         );
         await createCmd(
-            `cd "${extractDir}" && zip -r "${zipPath}" GC Wii`,
+            `cd "${extractDir}" && zip -r "${exportZipPath}" .`,
             false,
             jobId,
         );
         await createCmd(
-            buildScpCommand(device, zipPath, remoteZipPath, true),
+            buildSshCommand(device, `rm -f "${remoteExportZipPath}"`),
+            false,
+            jobId,
+        );
+        await createCmd(
+            buildScpCommand(device, exportZipPath, remoteExportZipPath, true),
             false,
             jobId,
         );
     } finally {
-        await safeCleanupDolphinAndroidWork(extractDir, zipPath, jobId);
+        await safeCleanupDolphinAndroidWork(
+            extractDir,
+            [baseZipPath, exportZipPath],
+            jobId,
+        );
     }
 };
 
@@ -108,18 +146,20 @@ const pullDolphinAndroid = async (
     jobId?: string,
 ) => {
     if (!device.dolphinDroidDump) return;
-    const { workDir, extractDir, zipPath } = getDolphinAndroidPaths(serverInfo);
-    const remoteZipPath = `${device.dolphinDroidDump}/${DOLPHIN_ANDROID_ZIP}`;
+    const { workDir, extractDir, baseZipPath, exportZipPath } =
+        getDolphinAndroidPaths(serverInfo);
+    const remoteBaseZipPath = `${device.dolphinDroidDump}/${DOLPHIN_ANDROID_BASE_ZIP}`;
 
     await createCmd(`mkdir -p "${workDir}"`, false, jobId);
     await createCmd(`rm -rf "${extractDir}"`, false, jobId);
-    await createCmd(`rm -f "${zipPath}"`, false, jobId);
+    await createCmd(`rm -f "${baseZipPath}"`, false, jobId);
+    await createCmd(`rm -f "${exportZipPath}"`, false, jobId);
 
     try {
         await createCmd(
             buildSshCommand(
                 device,
-                `if [ ! -f "${remoteZipPath}" ]; then echo "missing dolphin zip" >&2; exit 1; fi`,
+                `if [ ! -f "${remoteBaseZipPath}" ]; then echo "missing dolphin zip" >&2; exit 1; fi`,
             ),
             false,
             jobId,
@@ -130,13 +170,13 @@ const pullDolphinAndroid = async (
 
     try {
         await createCmd(
-            buildScpCommand(device, remoteZipPath, zipPath, false),
+            buildScpCommand(device, remoteBaseZipPath, baseZipPath, false),
             false,
             jobId,
         );
         await createCmd(`mkdir -p "${extractDir}"`, false, jobId);
         await createCmd(
-            `unzip -o "${zipPath}" -d "${extractDir}"`,
+            `unzip -o "${baseZipPath}" -d "${extractDir}"`,
             false,
             jobId,
         );
@@ -154,7 +194,11 @@ const pullDolphinAndroid = async (
             jobId,
         );
     } finally {
-        await safeCleanupDolphinAndroidWork(extractDir, zipPath, jobId);
+        await safeCleanupDolphinAndroidWork(
+            extractDir,
+            [baseZipPath, exportZipPath],
+            jobId,
+        );
     }
 };
 

@@ -1,0 +1,191 @@
+import type { Stats } from "node:fs";
+import path from "node:path";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { EmuDevice, EmuServer } from "./types";
+import { EmuOs, Emulator, SyncType } from "./types";
+
+const backupMocks = vi.hoisted(() => ({
+    buildScpCommand: vi.fn(),
+    buildSshCommand: vi.fn(),
+    createCmd: vi.fn(),
+    pushPairs: vi.fn(),
+    pullPairs: vi.fn(),
+}));
+
+const fsMocks = vi.hoisted(() => ({
+    stat: vi.fn(),
+}));
+
+vi.mock("./backup", () => ({
+    buildScpCommand: backupMocks.buildScpCommand,
+    buildSshCommand: backupMocks.buildSshCommand,
+    createCmd: backupMocks.createCmd,
+    pushPairs: backupMocks.pushPairs,
+    pullPairs: backupMocks.pullPairs,
+}));
+
+vi.mock("node:fs/promises", () => ({
+    default: {
+        stat: fsMocks.stat,
+    },
+    stat: fsMocks.stat,
+}));
+
+import { pull, push } from "./actions";
+
+const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
+    name: "Android",
+    ip: "10.0.0.50",
+    port: 22,
+    user: "emu",
+    password: "secret",
+    os: EmuOs.android,
+    syncType: SyncType.ssh,
+    cemuSave: undefined,
+    citraNand: undefined,
+    citraSdmc: undefined,
+    citraSysdata: undefined,
+    dolphinDroidDump: "/sdcard/dolphin",
+    dolphinGC: undefined,
+    dolphinWii: undefined,
+    mupenFzSave: undefined,
+    nethersx2Save: undefined,
+    nethersx2DroidDump: undefined,
+    pcsx2Save: undefined,
+    ppssppSave: undefined,
+    ppssppState: undefined,
+    retroarchSave: undefined,
+    retroarchState: undefined,
+    rpcs3Save: undefined,
+    ryujinxSave: undefined,
+    switchSave: undefined,
+    vita3kSave: undefined,
+    xemuSave: undefined,
+    xeniaSave: undefined,
+    yuzuDroid: undefined,
+    yuzuDroidDump: undefined,
+    yuzuSave: undefined,
+    workDir: "/sdcard/work",
+    ...overrides,
+});
+
+const buildServer = (overrides: Partial<EmuServer> = {}): EmuServer => ({
+    cemuSave: "/srv/cemu",
+    citraNand: "/srv/citra/nand",
+    citraSdmc: "/srv/citra/sdmc",
+    citraSysdata: "/srv/citra/sysdata",
+    dolphinGC: "/srv/dolphin/GC",
+    dolphinWii: "/srv/dolphin/Wii",
+    nethersx2Save: "/srv/nethersx2",
+    mupenFzSave: "/srv/mupen",
+    ppssppSave: "/srv/ppsspp",
+    ppssppState: "/srv/ppsspp/state",
+    retroarchSave: "/srv/retroarch",
+    retroarchState: "/srv/retroarch/states",
+    retroarchRgState: "/srv/retroarch/rg",
+    rpcs3Save: "/srv/rpcs3",
+    ryujinxSave: "/srv/ryujinx",
+    switchSave: "/srv/switch",
+    vita3kSave: "/srv/vita3k",
+    xemuSave: "/srv/xemu",
+    xeniaSave: "/srv/xenia",
+    yuzuSave: "/srv/yuzu",
+    workDir: "/srv/work",
+    ...overrides,
+});
+
+beforeEach(() => {
+    vi.clearAllMocks();
+    backupMocks.createCmd.mockResolvedValue(0);
+    backupMocks.buildSshCommand.mockImplementation(
+        (_device, cmd) => `ssh:${cmd}`,
+    );
+    backupMocks.buildScpCommand.mockImplementation(
+        (_device, source, target, push) =>
+            `scp:${source}:${target}:${push ? "push" : "pull"}`,
+    );
+    fsMocks.stat.mockResolvedValue({ isDirectory: () => true } as Stats);
+});
+
+describe("dolphin android push", () => {
+    it("fails when baseline zip is missing", async () => {
+        backupMocks.createCmd.mockImplementation((cmd: string) => {
+            if (cmd.includes("missing dolphin zip")) {
+                return Promise.reject(new Error("missing dolphin zip"));
+            }
+            return Promise.resolve(0);
+        });
+
+        const device = buildDevice();
+        const serverInfo = buildServer();
+
+        await expect(
+            push(device, Emulator.dolphin, serverInfo),
+        ).rejects.toThrow("missing dolphin zip");
+
+        const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
+        expect(commands.some((cmd) => cmd.includes("dolphin-emu.zip"))).toBe(
+            true,
+        );
+    });
+
+    it("rebuilds export zip from baseline", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const extractDir = path.posix.join(serverInfo.workDir, "dolphin_emu");
+        const baseZipPath = path.posix.join(
+            serverInfo.workDir,
+            "dolphin-emu.zip",
+        );
+        const exportZipPath = path.posix.join(
+            serverInfo.workDir,
+            "dolphin-export.zip",
+        );
+
+        await push(device, Emulator.dolphin, serverInfo);
+
+        expect(backupMocks.buildScpCommand).toHaveBeenCalledWith(
+            device,
+            `${device.dolphinDroidDump}/dolphin-emu.zip`,
+            baseZipPath,
+            false,
+        );
+        expect(backupMocks.buildScpCommand).toHaveBeenCalledWith(
+            device,
+            exportZipPath,
+            `${device.dolphinDroidDump}/dolphin-export.zip`,
+            true,
+        );
+
+        const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
+        expect(commands).toContain(
+            `unzip -o "${baseZipPath}" -d "${extractDir}"`,
+        );
+        expect(commands).toContain(
+            `rm -rf "${extractDir}/GC" "${extractDir}/Wii"`,
+        );
+        expect(commands).toContain(
+            `cd "${extractDir}" && zip -r "${exportZipPath}" .`,
+        );
+    });
+});
+
+describe("dolphin android pull", () => {
+    it("uses the dolphin-emu.zip baseline", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const baseZipPath = path.posix.join(
+            serverInfo.workDir,
+            "dolphin-emu.zip",
+        );
+
+        await pull(device, Emulator.dolphin, serverInfo);
+
+        expect(backupMocks.buildScpCommand).toHaveBeenCalledWith(
+            device,
+            `${device.dolphinDroidDump}/dolphin-emu.zip`,
+            baseZipPath,
+            false,
+        );
+    });
+});
