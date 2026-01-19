@@ -72,7 +72,12 @@ export function EmulatorActionForm() {
         }
         setDeviceSyncResponse(null);
         setRequestInProgress(false);
-    }, [selectedDevice, selectedDeviceData, setEmulatorActions]);
+    }, [
+        selectedDeviceData,
+        setDeviceSyncResponse,
+        setEmulatorActions,
+        setRequestInProgress,
+    ]);
 
     const handleActionChange = (emulator: string, action: EmulatorAction) => {
         setEmulatorActions({
@@ -135,11 +140,7 @@ export function EmulatorActionForm() {
             }, 3000);
             return () => clearInterval(interval);
         }
-    }, [
-        deviceSyncResponse?.id,
-        deviceSyncResponse?.deviceSyncRecord.status,
-        setDeviceSyncResponse,
-    ]);
+    }, [deviceSyncResponse, setDeviceSyncResponse]);
 
     useEffect(() => {
         if (!deviceSyncResponse) return;
@@ -149,7 +150,7 @@ export function EmulatorActionForm() {
         ) {
             setRequestInProgress(false);
         }
-    }, [deviceSyncResponse?.deviceSyncRecord.status, setRequestInProgress]);
+    }, [deviceSyncResponse, setRequestInProgress]);
 
     useEffect(() => {
         if (!outputRef.current) return;

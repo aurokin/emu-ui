@@ -27,7 +27,7 @@
 - Vite plugins are wired in `vite.config.ts` (React Router, Tailwind, tsconfig paths).
 - TypeScript settings and the `~/` path alias live in `tsconfig.json`.
 - Prettier settings live in `.prettierrc` (`tabWidth: 4`).
-- No ESLint config exists today; avoid adding one unless requested.
+- ESLint config lives in `eslint.config.js`.
 - Tailwind is enabled via the Vite plugin (no standalone config file).
 - No Cursor or Copilot rule files exist in this repo currently.
 
@@ -48,11 +48,11 @@
 
 ## Linting & Tests
 
-- ESLint is not configured yet.
+- ESLint is configured; run `bun run lint`.
 - Use `bun run typecheck` as the primary static analysis step.
-- There is no automated test runner configured in the repo.
-- If tests are added, prefer Vitest + React Testing Library.
-- Single test file (after adding Vitest): `bunx vitest path/to/file.test.tsx`.
+- Unit tests run with Vitest via `bun run test`.
+- Prefer Vitest + React Testing Library for new tests.
+- Single test file: `bunx vitest path/to/file.test.tsx`.
 
 ## Local Setup
 
@@ -150,4 +150,4 @@
 ## Contribution Hygiene
 
 - Keep changes minimal and avoid editing generated files.
-- Run `bun run format` and `bun run typecheck` before PRs.
+- Run `bun run health` (format, typecheck, test, lint) before PRs.

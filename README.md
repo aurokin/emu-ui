@@ -40,6 +40,14 @@ bun run dev
 
 Your application will be available at `http://localhost:5173`.
 
+### Quality Checks
+
+Run the health check before any change. It formats, typechecks, runs tests, and lints:
+
+```bash
+bun run health
+```
+
 ## Building for Production
 
 Create a production build:

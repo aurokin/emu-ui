@@ -12,7 +12,7 @@ import { useDevices } from "~/contexts/DeviceContext";
 import { EmulatorActionForm } from "~/components/EmulatorActionForm";
 import { capitalize } from "~/utilities/utils";
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
     return [
         { title: "EmuSync" },
         {
