@@ -150,4 +150,4 @@
 ## Contribution Hygiene
 
 - Keep changes minimal and avoid editing generated files.
-- Run `bun run health` (format, typecheck, test, lint) before PRs.
+- Use `bun run health` (format, typecheck, test, lint) for all validation runs.

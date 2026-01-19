@@ -1,8 +1,8 @@
 import type { Stats } from "node:fs";
 import path from "node:path";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmuDevice, EmuServer } from "./types";
-import { EmuOs, Emulator, SyncType } from "./types";
+import { EmuOs, Emulator, SyncAction, SyncType } from "./types";
 
 const backupMocks = vi.hoisted(() => ({
     buildScpCommand: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock("node:fs/promises", () => ({
     stat: fsMocks.stat,
 }));
 
-import { pull, push } from "./actions";
+import * as actions from "./actions";
 
 const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     name: "Android",
@@ -120,7 +120,7 @@ describe("dolphin android push", () => {
         const serverInfo = buildServer();
 
         await expect(
-            push(device, Emulator.dolphin, serverInfo),
+            actions.push(device, Emulator.dolphin, serverInfo),
         ).rejects.toThrow("missing dolphin zip");
 
         const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
@@ -142,7 +142,7 @@ describe("dolphin android push", () => {
             "dolphin-export.zip",
         );
 
-        await push(device, Emulator.dolphin, serverInfo);
+        await actions.push(device, Emulator.dolphin, serverInfo);
 
         expect(backupMocks.buildScpCommand).toHaveBeenCalledWith(
             device,
@@ -179,7 +179,7 @@ describe("dolphin android pull", () => {
             "dolphin-emu.zip",
         );
 
-        await pull(device, Emulator.dolphin, serverInfo);
+        await actions.pull(device, Emulator.dolphin, serverInfo);
 
         expect(backupMocks.buildScpCommand).toHaveBeenCalledWith(
             device,
@@ -187,5 +187,61 @@ describe("dolphin android pull", () => {
             baseZipPath,
             false,
         );
+    });
+});
+
+describe("runDeviceSync", () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("logs action flow", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const request = {
+            deviceName: device.name,
+            emulatorActions: [
+                { emulator: Emulator.cemu, action: SyncAction.push },
+                { emulator: Emulator.citra, action: SyncAction.pull },
+                { emulator: Emulator.dolphin, action: SyncAction.ignore },
+            ],
+        };
+        const logs = await actions.runDeviceSync(request, device, serverInfo);
+
+        expect(logs).toEqual([
+            `push:${Emulator.cemu}`,
+            `pull:${Emulator.citra}`,
+            `ignore:${Emulator.dolphin}`,
+        ]);
+        expect(backupMocks.pushPairs).toHaveBeenCalledWith(
+            device,
+            expect.any(Array),
+            undefined,
+        );
+        expect(backupMocks.pullPairs).toHaveBeenCalledWith(
+            device,
+            expect.any(Array),
+            serverInfo,
+            undefined,
+        );
+    });
+
+    it("logs errors per emulator", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const request = {
+            deviceName: device.name,
+            emulatorActions: [
+                { emulator: Emulator.cemu, action: SyncAction.push },
+            ],
+        };
+        backupMocks.pushPairs.mockRejectedValue(new Error("boom"));
+
+        const logs = await actions.runDeviceSync(request, device, serverInfo);
+
+        expect(logs).toEqual([
+            `push:${Emulator.cemu}`,
+            `error:${Emulator.cemu}:boom`,
+        ]);
     });
 });
