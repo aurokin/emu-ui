@@ -146,14 +146,13 @@ const pullDolphinAndroid = async (
     jobId?: string,
 ) => {
     if (!device.dolphinDroidDump) return;
-    const { workDir, extractDir, baseZipPath, exportZipPath } =
+    const { workDir, extractDir, baseZipPath } =
         getDolphinAndroidPaths(serverInfo);
     const remoteBaseZipPath = `${device.dolphinDroidDump}/${DOLPHIN_ANDROID_BASE_ZIP}`;
 
     await createCmd(`mkdir -p "${workDir}"`, false, jobId);
     await createCmd(`rm -rf "${extractDir}"`, false, jobId);
     await createCmd(`rm -f "${baseZipPath}"`, false, jobId);
-    await createCmd(`rm -f "${exportZipPath}"`, false, jobId);
 
     try {
         await createCmd(
@@ -194,11 +193,7 @@ const pullDolphinAndroid = async (
             jobId,
         );
     } finally {
-        await safeCleanupDolphinAndroidWork(
-            extractDir,
-            [baseZipPath, exportZipPath],
-            jobId,
-        );
+        await safeCleanupDolphinAndroidWork(extractDir, [baseZipPath], jobId);
     }
 };
 

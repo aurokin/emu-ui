@@ -187,6 +187,11 @@ describe("dolphin android pull", () => {
             baseZipPath,
             false,
         );
+
+        const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
+        expect(commands.some((cmd) => cmd.includes("dolphin-export.zip"))).toBe(
+            false,
+        );
     });
 });
 
