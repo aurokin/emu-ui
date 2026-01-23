@@ -3,6 +3,9 @@ import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Link } from "react-router";
 import { Logo } from "~/components/Logo";
 
 export function Header() {
@@ -132,6 +135,22 @@ export function Header() {
                     >
                         v1.0.0
                     </Typography>
+
+                    <IconButton
+                        component={Link}
+                        to="/admin"
+                        size="small"
+                        sx={{
+                            color: "text.secondary",
+                            ml: 1,
+                            "&:hover": {
+                                color: "#4fd1c5",
+                                backgroundColor: "rgba(79, 209, 197, 0.1)",
+                            },
+                        }}
+                    >
+                        <SettingsIcon fontSize="small" />
+                    </IconButton>
                 </Container>
             </Toolbar>
         </AppBar>
