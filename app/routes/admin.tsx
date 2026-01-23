@@ -352,74 +352,6 @@ export default function Admin() {
                 </Box>
             </Box>
 
-            {/* Server Configuration */}
-            <Accordion defaultExpanded sx={accordionSx}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
-                    <Box>
-                        <Typography
-                            sx={{
-                                fontFamily: '"Unbounded", sans-serif',
-                                fontWeight: 600,
-                                fontSize: "1.1rem",
-                            }}
-                        >
-                            Server Paths
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                            Configure emulator save locations on the server
-                        </Typography>
-                    </Box>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {serverLoading ? (
-                        <Typography sx={{ color: "text.secondary" }}>Loading...</Typography>
-                    ) : (
-                        <>
-                            <Box
-                                sx={{
-                                    display: "grid",
-                                    gap: 2,
-                                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                                }}
-                            >
-                                {serverFields.map((field) => (
-                                    <TextField
-                                        key={field.key}
-                                        label={field.label}
-                                        value={(serverConfig[field.key] as string) || ""}
-                                        onChange={(e) =>
-                                            handleServerFieldChange(field.key, e.target.value)
-                                        }
-                                        helperText={field.description}
-                                        fullWidth
-                                        size="small"
-                                        sx={inputSx}
-                                    />
-                                ))}
-                            </Box>
-                            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<SaveIcon />}
-                                    onClick={handleSaveServerConfig}
-                                    disabled={serverSaving}
-                                    sx={{
-                                        backgroundColor: "#4fd1c5",
-                                        color: "#0a0d14",
-                                        fontWeight: 600,
-                                        "&:hover": {
-                                            backgroundColor: "#3dbdb2",
-                                        },
-                                    }}
-                                >
-                                    {serverSaving ? "Saving..." : "Save Server Config"}
-                                </Button>
-                            </Box>
-                        </>
-                    )}
-                </AccordionDetails>
-            </Accordion>
-
             {/* Device Management */}
             <Accordion defaultExpanded sx={accordionSx}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
@@ -539,6 +471,74 @@ export default function Admin() {
                                         )}
                                     </TableBody>
                                 </Table>
+                            </Box>
+                        </>
+                    )}
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Server Configuration */}
+            <Accordion sx={accordionSx}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
+                    <Box>
+                        <Typography
+                            sx={{
+                                fontFamily: '"Unbounded", sans-serif',
+                                fontWeight: 600,
+                                fontSize: "1.1rem",
+                            }}
+                        >
+                            Server Paths
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                            Configure emulator save locations on the server
+                        </Typography>
+                    </Box>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {serverLoading ? (
+                        <Typography sx={{ color: "text.secondary" }}>Loading...</Typography>
+                    ) : (
+                        <>
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gap: 2,
+                                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                                }}
+                            >
+                                {serverFields.map((field) => (
+                                    <TextField
+                                        key={field.key}
+                                        label={field.label}
+                                        value={(serverConfig[field.key] as string) || ""}
+                                        onChange={(e) =>
+                                            handleServerFieldChange(field.key, e.target.value)
+                                        }
+                                        helperText={field.description}
+                                        fullWidth
+                                        size="small"
+                                        sx={inputSx}
+                                    />
+                                ))}
+                            </Box>
+                            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<SaveIcon />}
+                                    onClick={handleSaveServerConfig}
+                                    disabled={serverSaving}
+                                    sx={{
+                                        backgroundColor: "#4fd1c5",
+                                        color: "#0a0d14",
+                                        fontWeight: 600,
+                                        "&:hover": {
+                                            backgroundColor: "#3dbdb2",
+                                        },
+                                    }}
+                                >
+                                    {serverSaving ? "Saving..." : "Save Server Config"}
+                                </Button>
                             </Box>
                         </>
                     )}
