@@ -24,12 +24,18 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Skeleton from "@mui/material/Skeleton";
+import Fade from "@mui/material/Fade";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DevicesIcon from "@mui/icons-material/Devices";
+import AndroidIcon from "@mui/icons-material/Android";
+import ComputerIcon from "@mui/icons-material/Computer";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import { Link } from "react-router";
 import type { EmuServer } from "~/server/types";
 
@@ -40,53 +46,150 @@ export function meta(_args: Route.MetaArgs) {
     ];
 }
 
-// Server config field definitions
-const serverFields: { key: keyof EmuServer; label: string; description: string }[] = [
-    { key: "cemuSave", label: "Cemu Save", description: "Wii U saves (Cemu)" },
-    { key: "citraNand", label: "Citra NAND", description: "3DS NAND (Citra)" },
-    { key: "citraSdmc", label: "Citra SDMC", description: "3DS SD card (Citra)" },
-    { key: "citraSysdata", label: "Citra Sysdata", description: "3DS system data (Citra)" },
-    { key: "dolphinGC", label: "Dolphin GC", description: "GameCube saves" },
-    { key: "dolphinWii", label: "Dolphin Wii", description: "Wii saves" },
-    { key: "mupenFzSave", label: "Mupen64Plus FZ", description: "N64 saves" },
-    { key: "nethersx2Save", label: "NetherSX2", description: "PS2 memcards" },
-    { key: "ppssppSave", label: "PPSSPP Save", description: "PSP saves" },
-    { key: "ppssppState", label: "PPSSPP State", description: "PSP states" },
-    { key: "retroarchSave", label: "RetroArch Save", description: "RetroArch saves" },
-    { key: "retroarchState", label: "RetroArch State", description: "RetroArch states" },
-    { key: "retroarchRgState", label: "RetroArch RG State", description: "RetroArch RG states" },
-    { key: "rpcs3Save", label: "RPCS3", description: "PS3 saves" },
-    { key: "ryujinxSave", label: "Ryujinx", description: "Switch saves (Ryujinx)" },
-    { key: "switchSave", label: "Switch", description: "Switch saves (native)" },
-    { key: "vita3kSave", label: "Vita3K", description: "PS Vita saves" },
-    { key: "xemuSave", label: "xemu", description: "Xbox saves" },
-    { key: "xeniaSave", label: "Xenia", description: "Xbox 360 saves" },
-    { key: "yuzuSave", label: "Yuzu", description: "Switch saves (Yuzu)" },
-    { key: "workDir", label: "Work Directory", description: "Temporary working directory" },
+// Grouped server config field definitions by platform
+const serverFieldGroups: {
+    title: string;
+    icon: string;
+    fields: { key: keyof EmuServer; label: string; description: string }[];
+}[] = [
+    {
+        title: "Nintendo",
+        icon: "nintendo",
+        fields: [
+            { key: "dolphinGC", label: "GameCube Saves", description: "Dolphin emulator" },
+            { key: "dolphinWii", label: "Wii Saves", description: "Dolphin emulator" },
+            { key: "citraNand", label: "3DS NAND", description: "Citra emulator" },
+            { key: "citraSdmc", label: "3DS SD Card", description: "Citra emulator" },
+            { key: "citraSysdata", label: "3DS System Data", description: "Citra emulator" },
+            { key: "cemuSave", label: "Wii U Saves", description: "Cemu emulator" },
+            { key: "switchSave", label: "Switch Saves", description: "Native backup" },
+            { key: "yuzuSave", label: "Switch Saves (Yuzu)", description: "Yuzu emulator" },
+            { key: "ryujinxSave", label: "Switch Saves (Ryujinx)", description: "Ryujinx emulator" },
+            { key: "mupenFzSave", label: "N64 Saves", description: "Mupen64Plus FZ" },
+        ],
+    },
+    {
+        title: "Sony",
+        icon: "sony",
+        fields: [
+            { key: "ppssppSave", label: "PSP Saves", description: "PPSSPP emulator" },
+            { key: "ppssppState", label: "PSP States", description: "PPSSPP emulator" },
+            { key: "nethersx2Save", label: "PS2 Memory Cards", description: "NetherSX2 emulator" },
+            { key: "rpcs3Save", label: "PS3 Saves", description: "RPCS3 emulator" },
+            { key: "vita3kSave", label: "PS Vita Saves", description: "Vita3K emulator" },
+        ],
+    },
+    {
+        title: "Microsoft",
+        icon: "microsoft",
+        fields: [
+            { key: "xemuSave", label: "Xbox Saves", description: "xemu emulator" },
+            { key: "xeniaSave", label: "Xbox 360 Saves", description: "Xenia emulator" },
+        ],
+    },
+    {
+        title: "Multi-Platform",
+        icon: "multi",
+        fields: [
+            { key: "retroarchSave", label: "RetroArch Saves", description: "All cores" },
+            { key: "retroarchState", label: "RetroArch States", description: "All cores" },
+            { key: "retroarchRgState", label: "RetroArch RG States", description: "Handheld devices" },
+        ],
+    },
+    {
+        title: "System",
+        icon: "system",
+        fields: [
+            { key: "workDir", label: "Work Directory", description: "Temporary file storage" },
+        ],
+    },
 ];
 
 // Device field definitions
 const deviceBaseFields = [
-    { key: "name", label: "Name", required: true },
+    { key: "name", label: "Device Name", required: true },
     { key: "ip", label: "IP Address", required: true },
-    { key: "port", label: "Port", required: true, type: "number" },
+    { key: "port", label: "SSH Port", required: true, type: "number" },
     { key: "user", label: "Username", required: true },
     { key: "password", label: "Password", required: true, type: "password" },
     { key: "workDir", label: "Work Directory", required: true },
 ];
 
-const deviceEmulatorFields = [
-    "cemuSave", "citraNand", "citraSdmc", "citraSysdata",
-    "dolphinDroidDump", "dolphinGC", "dolphinWii",
-    "mupenFzSave", "nethersx2Save", "nethersx2DroidDump", "pcsx2Save",
-    "ppssppSave", "ppssppState",
-    "retroarchSave", "retroarchState",
-    "rpcs3Save", "ryujinxSave", "switchSave",
-    "vita3kSave", "xemuSave", "xeniaSave",
-    "yuzuDroid", "yuzuDroidDump", "yuzuSave",
+// Grouped device emulator fields by platform
+const deviceEmulatorGroups: {
+    title: string;
+    fields: { key: string; label: string }[];
+}[] = [
+    {
+        title: "Nintendo",
+        fields: [
+            { key: "dolphinGC", label: "GameCube Saves" },
+            { key: "dolphinWii", label: "Wii Saves" },
+            { key: "dolphinDroidDump", label: "Dolphin Android Dump" },
+            { key: "citraNand", label: "3DS NAND" },
+            { key: "citraSdmc", label: "3DS SD Card" },
+            { key: "citraSysdata", label: "3DS System Data" },
+            { key: "cemuSave", label: "Wii U Saves" },
+            { key: "switchSave", label: "Switch Saves" },
+            { key: "yuzuSave", label: "Yuzu Saves" },
+            { key: "yuzuDroid", label: "Yuzu Android" },
+            { key: "yuzuDroidDump", label: "Yuzu Android Dump" },
+            { key: "ryujinxSave", label: "Ryujinx Saves" },
+            { key: "mupenFzSave", label: "N64 Saves" },
+        ],
+    },
+    {
+        title: "Sony",
+        fields: [
+            { key: "ppssppSave", label: "PSP Saves" },
+            { key: "ppssppState", label: "PSP States" },
+            { key: "nethersx2Save", label: "PS2 Memory Cards" },
+            { key: "nethersx2DroidDump", label: "NetherSX2 Android Dump" },
+            { key: "pcsx2Save", label: "PCSX2 Saves" },
+            { key: "rpcs3Save", label: "PS3 Saves" },
+            { key: "vita3kSave", label: "PS Vita Saves" },
+        ],
+    },
+    {
+        title: "Microsoft",
+        fields: [
+            { key: "xemuSave", label: "Xbox Saves" },
+            { key: "xeniaSave", label: "Xbox 360 Saves" },
+        ],
+    },
+    {
+        title: "Multi-Platform",
+        fields: [
+            { key: "retroarchSave", label: "RetroArch Saves" },
+            { key: "retroarchState", label: "RetroArch States" },
+        ],
+    },
 ];
 
-const osOptions = ["android", "linux", "muos", "nx", "windows"];
+const osOptions: { value: string; label: string; icon: "android" | "computer" | "console" }[] = [
+    { value: "android", label: "Android", icon: "android" },
+    { value: "linux", label: "Linux", icon: "computer" },
+    { value: "windows", label: "Windows", icon: "computer" },
+    { value: "muos", label: "muOS", icon: "console" },
+    { value: "nx", label: "Nintendo Switch", icon: "console" },
+];
+
+// OS icon component
+function OsIcon({ os, size = "small" }: { os: string; size?: "small" | "medium" }) {
+    const iconProps = { fontSize: size, sx: { color: "#7aa2f7" } };
+    switch (os) {
+        case "android":
+            return <AndroidIcon {...iconProps} sx={{ color: "#a4cf69" }} />;
+        case "linux":
+        case "windows":
+            return <ComputerIcon {...iconProps} />;
+        case "muos":
+        case "nx":
+            return <SportsEsportsIcon {...iconProps} sx={{ color: "#f28fad" }} />;
+        default:
+            return <DevicesIcon {...iconProps} />;
+    }
+}
 
 type DeviceData = Record<string, unknown>;
 
@@ -275,14 +378,19 @@ export default function Admin() {
         "& .MuiOutlinedInput-root": {
             backgroundColor: "rgba(17, 24, 37, 0.6)",
             borderRadius: 2,
+            transition: "box-shadow 0.2s ease, border-color 0.2s ease",
             "& fieldset": {
                 borderColor: "rgba(122, 162, 247, 0.2)",
+                transition: "border-color 0.2s ease",
             },
             "&:hover fieldset": {
                 borderColor: "rgba(79, 209, 197, 0.4)",
             },
-            "&.Mui-focused fieldset": {
-                borderColor: "#4fd1c5",
+            "&.Mui-focused": {
+                boxShadow: "0 0 0 3px rgba(79, 209, 197, 0.15)",
+                "& fieldset": {
+                    borderColor: "#4fd1c5",
+                },
             },
         },
         "& .MuiInputLabel-root": {
@@ -297,451 +405,544 @@ export default function Admin() {
         backgroundColor: "rgba(17, 24, 37, 0.82)",
         borderRadius: "12px !important",
         border: "1px solid rgba(122, 162, 247, 0.2)",
+        transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         "&:before": { display: "none" },
         mb: 2,
         "&.Mui-expanded": {
             borderColor: "rgba(79, 209, 197, 0.4)",
+            boxShadow: "0 4px 20px rgba(79, 209, 197, 0.08)",
+        },
+    };
+
+    const groupHeaderSx = {
+        color: "#7aa2f7",
+        fontSize: "0.7rem",
+        fontWeight: 600,
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+        mb: 1.5,
+        mt: 2,
+        display: "flex",
+        alignItems: "center",
+        gap: 1,
+        "&:first-of-type": {
+            mt: 0,
         },
     };
 
     return (
-        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-            {/* Header */}
-            <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
-                <IconButton
-                    component={Link}
-                    to="/"
-                    sx={{
-                        color: "text.secondary",
-                        "&:hover": { color: "#4fd1c5" },
+        <Box
+            sx={{
+                minHeight: "100vh",
+                background: `
+                    radial-gradient(ellipse at 20% 0%, rgba(79, 209, 197, 0.04) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 100%, rgba(122, 162, 247, 0.04) 0%, transparent 50%),
+                    linear-gradient(180deg, rgba(11, 15, 23, 0) 0%, rgba(11, 15, 23, 1) 100%)
+                `,
+            }}
+        >
+            <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+                {/* Header */}
+                <Fade in timeout={400}>
+                    <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
+                        <IconButton
+                            component={Link}
+                            to="/"
+                            sx={{
+                                color: "text.secondary",
+                                transition: "color 0.2s ease",
+                                "&:hover": { color: "#4fd1c5" },
+                            }}
+                        >
+                            <ArrowBackIcon />
+                        </IconButton>
+                        <Box>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "#7aa2f7",
+                                    letterSpacing: "0.2em",
+                                    display: "block",
+                                    mb: 1,
+                                }}
+                            >
+                                ADMINISTRATION
+                            </Typography>
+                            <Typography
+                                variant="h3"
+                                sx={{
+                                    fontFamily: '"Unbounded", sans-serif',
+                                    fontWeight: 600,
+                                    mb: 1,
+                                }}
+                            >
+                                Configuration
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    color: "text.secondary",
+                                    maxWidth: 520,
+                                    fontSize: "0.95rem",
+                                }}
+                            >
+                                Manage server paths and device connections
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Fade>
+
+                {/* Device Management */}
+                <Fade in timeout={500} style={{ transitionDelay: "100ms" }}>
+                    <Accordion defaultExpanded sx={accordionSx}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                <DevicesIcon sx={{ color: "#4fd1c5", fontSize: "1.3rem" }} />
+                                <Box>
+                                    <Typography
+                                        sx={{
+                                            fontFamily: '"Unbounded", sans-serif',
+                                            fontWeight: 600,
+                                            fontSize: "1.1rem",
+                                        }}
+                                    >
+                                        Devices
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                                        Manage device connections and emulator paths
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            {devicesLoading ? (
+                                <Box>
+                                    <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+                                        <Skeleton variant="rounded" width={120} height={36} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                    </Box>
+                                    <Box sx={{ borderRadius: 2, border: "1px solid rgba(122, 162, 247, 0.2)", overflow: "hidden" }}>
+                                        {[1, 2, 3].map((i) => (
+                                            <Box key={i} sx={{ display: "flex", gap: 2, p: 1.5, borderBottom: "1px solid rgba(122, 162, 247, 0.1)" }}>
+                                                <Skeleton variant="text" width={100} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                <Skeleton variant="text" width={120} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                <Skeleton variant="text" width={50} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                <Skeleton variant="text" width={70} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                <Box sx={{ ml: "auto" }}>
+                                                    <Skeleton variant="circular" width={28} height={28} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                </Box>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            ) : (
+                                <>
+                                    <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+                                        <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleOpenAddDevice}
+                                            sx={{
+                                                borderColor: "#4fd1c5",
+                                                color: "#4fd1c5",
+                                                "&:hover": {
+                                                    borderColor: "#3dbdb2",
+                                                    backgroundColor: "rgba(79, 209, 197, 0.1)",
+                                                },
+                                            }}
+                                        >
+                                            Add Device
+                                        </Button>
+                                    </Box>
+                                    {devices.length === 0 ? (
+                                        <Box
+                                            sx={{
+                                                py: 6,
+                                                px: 3,
+                                                textAlign: "center",
+                                                borderRadius: 2,
+                                                border: "1px dashed rgba(122, 162, 247, 0.3)",
+                                                backgroundColor: "rgba(122, 162, 247, 0.03)",
+                                            }}
+                                        >
+                                            <DevicesIcon sx={{ fontSize: 48, color: "rgba(122, 162, 247, 0.3)", mb: 2 }} />
+                                            <Typography sx={{ color: "text.secondary", mb: 1 }}>
+                                                No devices configured yet
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 2 }}>
+                                                Add your first device to start syncing emulator saves
+                                            </Typography>
+                                            <Button
+                                                variant="contained"
+                                                startIcon={<AddIcon />}
+                                                onClick={handleOpenAddDevice}
+                                                size="small"
+                                            >
+                                                Add Your First Device
+                                            </Button>
+                                        </Box>
+                                    ) : (
+                                        <Box
+                                            sx={{
+                                                overflowX: "auto",
+                                                borderRadius: 2,
+                                                border: "1px solid rgba(122, 162, 247, 0.2)",
+                                            }}
+                                        >
+                                            <Table size="small">
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                            Name
+                                                        </TableCell>
+                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                            IP Address
+                                                        </TableCell>
+                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                            Port
+                                                        </TableCell>
+                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                            Platform
+                                                        </TableCell>
+                                                        <TableCell
+                                                            align="right"
+                                                            sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}
+                                                        >
+                                                            Actions
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {devices.map((device, index) => (
+                                                        <Fade in timeout={300} style={{ transitionDelay: `${index * 50}ms` }} key={device.name as string}>
+                                                            <TableRow
+                                                                sx={{
+                                                                    transition: "background-color 0.15s ease",
+                                                                    "&:hover": {
+                                                                        backgroundColor: "rgba(79, 209, 197, 0.05)",
+                                                                    },
+                                                                }}
+                                                            >
+                                                                <TableCell sx={{ fontWeight: 500 }}>{device.name as string}</TableCell>
+                                                                <TableCell sx={{ fontFamily: "monospace", fontSize: "0.85rem", color: "text.secondary" }}>
+                                                                    {device.ip as string}
+                                                                </TableCell>
+                                                                <TableCell sx={{ color: "text.secondary" }}>{device.port as number}</TableCell>
+                                                                <TableCell>
+                                                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                                                        <OsIcon os={device.os as string} />
+                                                                        <Typography variant="body2" sx={{ textTransform: "capitalize" }}>
+                                                                            {osOptions.find(o => o.value === device.os)?.label || String(device.os)}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </TableCell>
+                                                                <TableCell align="right">
+                                                                    <IconButton
+                                                                        size="small"
+                                                                        onClick={() => handleOpenEditDevice(device)}
+                                                                        sx={{ color: "#7aa2f7", transition: "color 0.15s ease", "&:hover": { color: "#4fd1c5" } }}
+                                                                    >
+                                                                        <EditIcon fontSize="small" />
+                                                                    </IconButton>
+                                                                    <IconButton
+                                                                        size="small"
+                                                                        onClick={() => {
+                                                                            setDeviceToDelete(device.name as string);
+                                                                            setDeleteDialogOpen(true);
+                                                                        }}
+                                                                        sx={{ color: "#f28fad", transition: "opacity 0.15s ease", "&:hover": { opacity: 0.8 } }}
+                                                                    >
+                                                                        <DeleteIcon fontSize="small" />
+                                                                    </IconButton>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </Fade>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </Box>
+                                    )}
+                                </>
+                            )}
+                        </AccordionDetails>
+                    </Accordion>
+                </Fade>
+
+                {/* Server Configuration */}
+                <Fade in timeout={500} style={{ transitionDelay: "200ms" }}>
+                    <Accordion sx={accordionSx}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                <SportsEsportsIcon sx={{ color: "#f28fad", fontSize: "1.3rem" }} />
+                                <Box>
+                                    <Typography
+                                        sx={{
+                                            fontFamily: '"Unbounded", sans-serif',
+                                            fontWeight: 600,
+                                            fontSize: "1.1rem",
+                                        }}
+                                    >
+                                        Server Paths
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                                        Configure emulator save locations on the server
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            {serverLoading ? (
+                                <Box>
+                                    {[1, 2, 3].map((group) => (
+                                        <Box key={group} sx={{ mb: 3 }}>
+                                            <Skeleton variant="text" width={100} height={20} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)", mb: 1.5 }} />
+                                            <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" } }}>
+                                                {[1, 2, 3, 4].map((i) => (
+                                                    <Skeleton key={i} variant="rounded" height={56} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                ))}
+                                            </Box>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            ) : (
+                                <>
+                                    {serverFieldGroups.map((group, groupIndex) => (
+                                        <Box key={group.title} sx={{ mb: groupIndex < serverFieldGroups.length - 1 ? 3 : 0 }}>
+                                            <Typography sx={groupHeaderSx}>
+                                                {group.title}
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    display: "grid",
+                                                    gap: 2,
+                                                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                                                }}
+                                            >
+                                                {group.fields.map((field) => (
+                                                    <TextField
+                                                        key={field.key}
+                                                        label={field.label}
+                                                        value={(serverConfig[field.key] as string) || ""}
+                                                        onChange={(e) =>
+                                                            handleServerFieldChange(field.key, e.target.value)
+                                                        }
+                                                        helperText={field.description}
+                                                        fullWidth
+                                                        size="small"
+                                                        sx={inputSx}
+                                                    />
+                                                ))}
+                                            </Box>
+                                        </Box>
+                                    ))}
+                                    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<SaveIcon />}
+                                            onClick={handleSaveServerConfig}
+                                            disabled={serverSaving}
+                                        >
+                                            {serverSaving ? "Saving..." : "Save Server Config"}
+                                        </Button>
+                                    </Box>
+                                </>
+                            )}
+                        </AccordionDetails>
+                    </Accordion>
+                </Fade>
+
+                {/* Device Add/Edit Dialog */}
+                <Dialog
+                    open={deviceDialogOpen}
+                    onClose={() => setDeviceDialogOpen(false)}
+                    maxWidth="md"
+                    fullWidth
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                backgroundColor: "rgba(17, 24, 37, 0.98)",
+                                border: "1px solid rgba(122, 162, 247, 0.3)",
+                                borderRadius: 3,
+                            },
+                        },
                     }}
                 >
-                    <ArrowBackIcon />
-                </IconButton>
-                <Box>
-                    <Typography
-                        variant="caption"
-                        sx={{
-                            color: "#7aa2f7",
-                            letterSpacing: "0.2em",
-                            display: "block",
-                            mb: 1,
-                        }}
-                    >
-                        ADMINISTRATION
-                    </Typography>
-                    <Typography
-                        variant="h3"
+                    <DialogTitle
                         sx={{
                             fontFamily: '"Unbounded", sans-serif',
                             fontWeight: 600,
-                            mb: 1,
                         }}
                     >
-                        Configuration
-                    </Typography>
-                    <Typography
-                        sx={{
-                            color: "text.secondary",
-                            maxWidth: 520,
-                            fontSize: "0.95rem",
-                        }}
-                    >
-                        Manage server paths and device connections
-                    </Typography>
-                </Box>
-            </Box>
-
-            {/* Device Management */}
-            <Accordion defaultExpanded sx={accordionSx}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
-                    <Box>
-                        <Typography
-                            sx={{
-                                fontFamily: '"Unbounded", sans-serif',
-                                fontWeight: 600,
-                                fontSize: "1.1rem",
-                            }}
-                        >
-                            Devices
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                            Manage device connections and emulator paths
-                        </Typography>
-                    </Box>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {devicesLoading ? (
-                        <Typography sx={{ color: "text.secondary" }}>Loading...</Typography>
-                    ) : (
-                        <>
-                            <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<AddIcon />}
-                                    onClick={handleOpenAddDevice}
-                                    sx={{
-                                        borderColor: "#4fd1c5",
-                                        color: "#4fd1c5",
-                                        "&:hover": {
-                                            borderColor: "#3dbdb2",
-                                            backgroundColor: "rgba(79, 209, 197, 0.1)",
-                                        },
-                                    }}
-                                >
-                                    Add Device
-                                </Button>
-                            </Box>
-                            <Box
-                                sx={{
-                                    overflowX: "auto",
-                                    borderRadius: 2,
-                                    border: "1px solid rgba(122, 162, 247, 0.2)",
-                                }}
-                            >
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ color: "#7aa2f7", fontWeight: 600 }}>
-                                                Name
-                                            </TableCell>
-                                            <TableCell sx={{ color: "#7aa2f7", fontWeight: 600 }}>
-                                                IP
-                                            </TableCell>
-                                            <TableCell sx={{ color: "#7aa2f7", fontWeight: 600 }}>
-                                                Port
-                                            </TableCell>
-                                            <TableCell sx={{ color: "#7aa2f7", fontWeight: 600 }}>
-                                                OS
-                                            </TableCell>
-                                            <TableCell
-                                                align="right"
-                                                sx={{ color: "#7aa2f7", fontWeight: 600 }}
-                                            >
-                                                Actions
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {devices.map((device) => (
-                                            <TableRow
-                                                key={device.name as string}
-                                                sx={{
-                                                    "&:hover": {
-                                                        backgroundColor: "rgba(79, 209, 197, 0.05)",
-                                                    },
-                                                }}
-                                            >
-                                                <TableCell>{device.name as string}</TableCell>
-                                                <TableCell sx={{ fontFamily: "monospace" }}>
-                                                    {device.ip as string}
-                                                </TableCell>
-                                                <TableCell>{device.port as number}</TableCell>
-                                                <TableCell>{device.os as string}</TableCell>
-                                                <TableCell align="right">
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleOpenEditDevice(device)}
-                                                        sx={{ color: "#7aa2f7" }}
-                                                    >
-                                                        <EditIcon fontSize="small" />
-                                                    </IconButton>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => {
-                                                            setDeviceToDelete(device.name as string);
-                                                            setDeleteDialogOpen(true);
-                                                        }}
-                                                        sx={{ color: "#f28fad" }}
-                                                    >
-                                                        <DeleteIcon fontSize="small" />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                        {devices.length === 0 && (
-                                            <TableRow>
-                                                <TableCell
-                                                    colSpan={5}
-                                                    sx={{ textAlign: "center", color: "text.secondary" }}
-                                                >
-                                                    No devices configured
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </Box>
-                        </>
-                    )}
-                </AccordionDetails>
-            </Accordion>
-
-            {/* Server Configuration */}
-            <Accordion sx={accordionSx}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
-                    <Box>
-                        <Typography
-                            sx={{
-                                fontFamily: '"Unbounded", sans-serif',
-                                fontWeight: 600,
-                                fontSize: "1.1rem",
-                            }}
-                        >
-                            Server Paths
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                            Configure emulator save locations on the server
-                        </Typography>
-                    </Box>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {serverLoading ? (
-                        <Typography sx={{ color: "text.secondary" }}>Loading...</Typography>
-                    ) : (
-                        <>
+                        {editingDevice ? "Edit Device" : "Add Device"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <Box sx={{ pt: 1 }}>
+                            <Typography sx={groupHeaderSx}>
+                                Connection Details
+                            </Typography>
                             <Box
                                 sx={{
                                     display: "grid",
                                     gap: 2,
-                                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                                    mb: 3,
                                 }}
                             >
-                                {serverFields.map((field) => (
+                                {deviceBaseFields.map((field) => (
                                     <TextField
                                         key={field.key}
                                         label={field.label}
-                                        value={(serverConfig[field.key] as string) || ""}
+                                        value={(deviceForm[field.key] as string | number) ?? ""}
                                         onChange={(e) =>
-                                            handleServerFieldChange(field.key, e.target.value)
+                                            handleDeviceFormChange(
+                                                field.key,
+                                                field.type === "number"
+                                                    ? Number(e.target.value)
+                                                    : e.target.value,
+                                            )
                                         }
-                                        helperText={field.description}
+                                        required={field.required}
+                                        type={field.type || "text"}
                                         fullWidth
                                         size="small"
                                         sx={inputSx}
                                     />
                                 ))}
+                                <FormControl fullWidth size="small" sx={inputSx}>
+                                    <InputLabel>Operating System</InputLabel>
+                                    <Select
+                                        value={(deviceForm.os as string) || "linux"}
+                                        label="Operating System"
+                                        onChange={(e) => handleDeviceFormChange("os", e.target.value)}
+                                    >
+                                        {osOptions.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                                    <OsIcon os={option.value} />
+                                                    {option.label}
+                                                </Box>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </Box>
-                            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<SaveIcon />}
-                                    onClick={handleSaveServerConfig}
-                                    disabled={serverSaving}
-                                    sx={{
-                                        backgroundColor: "#4fd1c5",
-                                        color: "#0a0d14",
-                                        fontWeight: 600,
-                                        "&:hover": {
-                                            backgroundColor: "#3dbdb2",
-                                        },
-                                    }}
-                                >
-                                    {serverSaving ? "Saving..." : "Save Server Config"}
-                                </Button>
-                            </Box>
-                        </>
-                    )}
-                </AccordionDetails>
-            </Accordion>
 
-            {/* Device Add/Edit Dialog */}
-            <Dialog
-                open={deviceDialogOpen}
-                onClose={() => setDeviceDialogOpen(false)}
-                maxWidth="md"
-                fullWidth
-                slotProps={{
-                    paper: {
-                        sx: {
-                            backgroundColor: "rgba(17, 24, 37, 0.98)",
-                            border: "1px solid rgba(122, 162, 247, 0.3)",
-                            borderRadius: 3,
+                            {/* Grouped Emulator Paths */}
+                            {deviceEmulatorGroups.map((group, groupIndex) => (
+                                <Box key={group.title} sx={{ mb: groupIndex < deviceEmulatorGroups.length - 1 ? 3 : 0 }}>
+                                    <Typography sx={groupHeaderSx}>
+                                        {group.title} Paths
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            display: "grid",
+                                            gap: 2,
+                                            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                                        }}
+                                    >
+                                        {group.fields.map((field) => (
+                                            <TextField
+                                                key={field.key}
+                                                label={field.label}
+                                                value={(deviceForm[field.key] as string) || ""}
+                                                onChange={(e) => handleDeviceFormChange(field.key, e.target.value)}
+                                                fullWidth
+                                                size="small"
+                                                sx={inputSx}
+                                            />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Box>
+                    </DialogContent>
+                    <DialogActions sx={{ px: 3, pb: 3 }}>
+                        <Button
+                            onClick={() => setDeviceDialogOpen(false)}
+                            sx={{ color: "text.secondary" }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={handleSaveDevice}
+                            disabled={deviceSaving}
+                        >
+                            {deviceSaving ? "Saving..." : editingDevice ? "Update" : "Add"}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* Delete Confirmation Dialog */}
+                <Dialog
+                    open={deleteDialogOpen}
+                    onClose={() => setDeleteDialogOpen(false)}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                backgroundColor: "rgba(17, 24, 37, 0.98)",
+                                border: "1px solid rgba(242, 143, 173, 0.3)",
+                                borderRadius: 3,
+                            },
                         },
-                    },
-                }}
-            >
-                <DialogTitle
-                    sx={{
-                        fontFamily: '"Unbounded", sans-serif',
-                        fontWeight: 600,
                     }}
                 >
-                    {editingDevice ? "Edit Device" : "Add Device"}
-                </DialogTitle>
-                <DialogContent>
-                    <Box sx={{ pt: 1 }}>
-                        <Typography
-                            variant="subtitle2"
-                            sx={{ color: "#7aa2f7", mb: 2, fontWeight: 600 }}
-                        >
-                            Connection Details
+                    <DialogTitle sx={{ fontFamily: '"Unbounded", sans-serif' }}>
+                        Delete Device
+                    </DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            Are you sure you want to delete "{deviceToDelete}"? This action cannot be
+                            undone.
                         </Typography>
-                        <Box
+                    </DialogContent>
+                    <DialogActions sx={{ px: 3, pb: 3 }}>
+                        <Button
+                            onClick={() => setDeleteDialogOpen(false)}
+                            sx={{ color: "text.secondary" }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={handleConfirmDelete}
                             sx={{
-                                display: "grid",
-                                gap: 2,
-                                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-                                mb: 3,
+                                backgroundColor: "#f28fad",
+                                color: "#0a0d14",
+                                fontWeight: 600,
+                                "&:hover": { backgroundColor: "#e07a9a" },
                             }}
                         >
-                            {deviceBaseFields.map((field) => (
-                                <TextField
-                                    key={field.key}
-                                    label={field.label}
-                                    value={(deviceForm[field.key] as string | number) ?? ""}
-                                    onChange={(e) =>
-                                        handleDeviceFormChange(
-                                            field.key,
-                                            field.type === "number"
-                                                ? Number(e.target.value)
-                                                : e.target.value,
-                                        )
-                                    }
-                                    required={field.required}
-                                    type={field.type || "text"}
-                                    fullWidth
-                                    size="small"
-                                    sx={inputSx}
-                                />
-                            ))}
-                            <FormControl fullWidth size="small" sx={inputSx}>
-                                <InputLabel>Operating System</InputLabel>
-                                <Select
-                                    value={(deviceForm.os as string) || "linux"}
-                                    label="Operating System"
-                                    onChange={(e) => handleDeviceFormChange("os", e.target.value)}
-                                >
-                                    {osOptions.map((os) => (
-                                        <MenuItem key={os} value={os}>
-                                            {os}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
 
-                        <Typography
-                            variant="subtitle2"
-                            sx={{ color: "#7aa2f7", mb: 2, fontWeight: 600 }}
-                        >
-                            Emulator Paths (Optional)
-                        </Typography>
-                        <Box
-                            sx={{
-                                display: "grid",
-                                gap: 2,
-                                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-                            }}
-                        >
-                            {deviceEmulatorFields.map((field) => (
-                                <TextField
-                                    key={field}
-                                    label={field}
-                                    value={(deviceForm[field] as string) || ""}
-                                    onChange={(e) => handleDeviceFormChange(field, e.target.value)}
-                                    fullWidth
-                                    size="small"
-                                    sx={inputSx}
-                                />
-                            ))}
-                        </Box>
-                    </Box>
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 3 }}>
-                    <Button
-                        onClick={() => setDeviceDialogOpen(false)}
-                        sx={{ color: "text.secondary" }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="contained"
-                        onClick={handleSaveDevice}
-                        disabled={deviceSaving}
-                        sx={{
-                            backgroundColor: "#4fd1c5",
-                            color: "#0a0d14",
-                            fontWeight: 600,
-                            "&:hover": { backgroundColor: "#3dbdb2" },
-                        }}
-                    >
-                        {deviceSaving ? "Saving..." : editingDevice ? "Update" : "Add"}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Delete Confirmation Dialog */}
-            <Dialog
-                open={deleteDialogOpen}
-                onClose={() => setDeleteDialogOpen(false)}
-                slotProps={{
-                    paper: {
-                        sx: {
-                            backgroundColor: "rgba(17, 24, 37, 0.98)",
-                            border: "1px solid rgba(242, 143, 173, 0.3)",
-                            borderRadius: 3,
-                        },
-                    },
-                }}
-            >
-                <DialogTitle sx={{ fontFamily: '"Unbounded", sans-serif' }}>
-                    Delete Device
-                </DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Are you sure you want to delete "{deviceToDelete}"? This action cannot be
-                        undone.
-                    </Typography>
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 3 }}>
-                    <Button
-                        onClick={() => setDeleteDialogOpen(false)}
-                        sx={{ color: "text.secondary" }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="contained"
-                        onClick={handleConfirmDelete}
-                        sx={{
-                            backgroundColor: "#f28fad",
-                            color: "#0a0d14",
-                            fontWeight: 600,
-                            "&:hover": { backgroundColor: "#e07a9a" },
-                        }}
-                    >
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Snackbar for notifications */}
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={4000}
-                onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-                <Alert
-                    severity={snackbar.severity}
+                {/* Snackbar for notifications */}
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={4000}
                     onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-                    sx={{
-                        backgroundColor:
-                            snackbar.severity === "success"
-                                ? "rgba(79, 209, 197, 0.15)"
-                                : "rgba(242, 143, 173, 0.15)",
-                        border: "1px solid",
-                        borderColor:
-                            snackbar.severity === "success"
-                                ? "rgba(79, 209, 197, 0.4)"
-                                : "rgba(242, 143, 173, 0.4)",
-                        color: snackbar.severity === "success" ? "#4fd1c5" : "#f28fad",
-                    }}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 >
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
-        </Container>
+                    <Alert
+                        severity={snackbar.severity}
+                        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                        sx={{
+                            backgroundColor:
+                                snackbar.severity === "success"
+                                    ? "rgba(79, 209, 197, 0.15)"
+                                    : "rgba(242, 143, 173, 0.15)",
+                            border: "1px solid",
+                            borderColor:
+                                snackbar.severity === "success"
+                                    ? "rgba(79, 209, 197, 0.4)"
+                                    : "rgba(242, 143, 173, 0.4)",
+                            color: snackbar.severity === "success" ? "#4fd1c5" : "#f28fad",
+                        }}
+                    >
+                        {snackbar.message}
+                    </Alert>
+                </Snackbar>
+            </Container>
+        </Box>
     );
 }
