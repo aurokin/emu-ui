@@ -19,6 +19,8 @@ import { getManageFn } from "./emulator_managers";
 const DOLPHIN_ANDROID_BASE_ZIP = "dolphin-emu.zip";
 const DOLPHIN_ANDROID_EXPORT_ZIP = "dolphin-export.zip";
 const DOLPHIN_ANDROID_DIR = "dolphin_emu";
+const DOLPHIN_ANDROID_SCAN_MAX_DEPTH = 12;
+const DOLPHIN_ANDROID_SCAN_MAX_DIRS = 10000;
 
 const getDolphinAndroidPaths = (serverInfo: EmuServer) => {
     const workDir = serverInfo.workDir;
@@ -35,17 +37,122 @@ const getDolphinAndroidPaths = (serverInfo: EmuServer) => {
     };
 };
 
-const ensureDolphinAndroidData = async (extractDir: string) => {
-    const gcPath = path.posix.join(extractDir, "GC");
-    const wiiPath = path.posix.join(extractDir, "Wii");
+const resolveDolphinAndroidDataPaths = async (rootPath: string) => {
+    const gcPath = path.posix.join(rootPath, "GC");
+    const wiiPath = path.posix.join(rootPath, "Wii");
     const [gcStats, wiiStats] = await Promise.all([
-        fs.stat(gcPath),
-        fs.stat(wiiPath),
+        fs.stat(gcPath).catch(() => undefined),
+        fs.stat(wiiPath).catch(() => undefined),
     ]);
-    if (!gcStats.isDirectory() || !wiiStats.isDirectory()) {
-        throw new Error("Dolphin zip missing GC/Wii data");
+    if (gcStats?.isDirectory() && wiiStats?.isDirectory()) {
+        return { rootPath, gcPath, wiiPath };
     }
-    return { gcPath, wiiPath };
+
+    const entries = await fs
+        .readdir(rootPath, { withFileTypes: true })
+        .catch(() => []);
+    const gcEntry = entries.find(
+        (entry) => entry.isDirectory() && entry.name.toLowerCase() === "gc",
+    );
+    const wiiEntry = entries.find(
+        (entry) => entry.isDirectory() && entry.name.toLowerCase() === "wii",
+    );
+    if (!gcEntry || !wiiEntry) {
+        return undefined;
+    }
+
+    return {
+        rootPath,
+        gcPath: path.posix.join(rootPath, gcEntry.name),
+        wiiPath: path.posix.join(rootPath, wiiEntry.name),
+    };
+};
+
+const ensureDolphinAndroidData = async (extractDir: string) => {
+    const queue: Array<{ rootPath: string; depth: number }> = [
+        { rootPath: extractDir, depth: 0 },
+    ];
+    let scannedDirs = 0;
+
+    while (queue.length > 0) {
+        const current = queue.pop();
+        if (!current) {
+            continue;
+        }
+
+        const rootData = await resolveDolphinAndroidDataPaths(current.rootPath);
+        if (rootData) {
+            return rootData;
+        }
+
+        if (current.depth >= DOLPHIN_ANDROID_SCAN_MAX_DEPTH) {
+            continue;
+        }
+
+        const entries = await fs
+            .readdir(current.rootPath, { withFileTypes: true })
+            .catch(() => []);
+        for (const entry of entries) {
+            const entryNameLower = entry.name.toLowerCase();
+            if (
+                !entry.isDirectory() ||
+                entryNameLower === "gc" ||
+                entryNameLower === "wii"
+            ) {
+                continue;
+            }
+            queue.push({
+                rootPath: path.posix.join(current.rootPath, entry.name),
+                depth: current.depth + 1,
+            });
+            scannedDirs += 1;
+            if (scannedDirs >= DOLPHIN_ANDROID_SCAN_MAX_DIRS) {
+                break;
+            }
+        }
+
+        if (scannedDirs >= DOLPHIN_ANDROID_SCAN_MAX_DIRS) {
+            break;
+        }
+    }
+
+    throw new Error("Dolphin zip missing GC/Wii data");
+};
+
+const extractDolphinAndroidData = async (
+    zipPath: string,
+    extractDir: string,
+    jobId?: string,
+) => {
+    const fixedZipPath = `${zipPath}.fixed`;
+
+    const extractAndResolve = async (sourceZipPath: string) => {
+        await createCmd(`rm -rf "${extractDir}"`, false, jobId);
+        await createCmd(`mkdir -p "${extractDir}"`, false, jobId);
+        await createCmd(
+            `unzip -o "${sourceZipPath}" -d "${extractDir}"`,
+            false,
+            jobId,
+        );
+        return ensureDolphinAndroidData(extractDir);
+    };
+
+    try {
+        const dataPaths = await extractAndResolve(zipPath);
+        return {
+            ...dataPaths,
+            repairedZipPath: undefined as string | undefined,
+        };
+    } catch {
+        await createCmd(`rm -f "${fixedZipPath}"`, false, jobId);
+        await createCmd(
+            `zip -FF "${zipPath}" --out "${fixedZipPath}"`,
+            false,
+            jobId,
+        );
+        const dataPaths = await extractAndResolve(fixedZipPath);
+        return { ...dataPaths, repairedZipPath: fixedZipPath };
+    }
 };
 
 const safeCleanupDolphinAndroidWork = async (
@@ -92,27 +199,29 @@ const pushDolphinAndroid = async (
         jobId,
     );
 
+    let repairedZipPath: string | undefined;
+
     try {
         await createCmd(
             buildScpCommand(device, remoteBaseZipPath, baseZipPath, false),
             false,
             jobId,
         );
-        await createCmd(`mkdir -p "${extractDir}"`, false, jobId);
-        await createCmd(
-            `unzip -o "${baseZipPath}" -d "${extractDir}"`,
-            false,
+        const dataPaths = await extractDolphinAndroidData(
+            baseZipPath,
+            extractDir,
             jobId,
         );
-        const { gcPath, wiiPath } = await ensureDolphinAndroidData(extractDir);
+        repairedZipPath = dataPaths.repairedZipPath;
+        const { rootPath, gcPath, wiiPath } = dataPaths;
         await createCmd(`rm -rf "${gcPath}" "${wiiPath}"`, false, jobId);
         await createCmd(
-            `cp -r "${serverInfo.dolphinGC}" "${extractDir}"`,
+            `cp -r "${serverInfo.dolphinGC}" "${rootPath}"`,
             false,
             jobId,
         );
         await createCmd(
-            `cp -r "${serverInfo.dolphinWii}" "${extractDir}"`,
+            `cp -r "${serverInfo.dolphinWii}" "${rootPath}"`,
             false,
             jobId,
         );
@@ -134,7 +243,11 @@ const pushDolphinAndroid = async (
     } finally {
         await safeCleanupDolphinAndroidWork(
             extractDir,
-            [baseZipPath, exportZipPath],
+            [
+                baseZipPath,
+                exportZipPath,
+                ...(repairedZipPath ? [repairedZipPath] : []),
+            ],
             jobId,
         );
     }
@@ -167,19 +280,21 @@ const pullDolphinAndroid = async (
         return;
     }
 
+    let repairedZipPath: string | undefined;
+
     try {
         await createCmd(
             buildScpCommand(device, remoteBaseZipPath, baseZipPath, false),
             false,
             jobId,
         );
-        await createCmd(`mkdir -p "${extractDir}"`, false, jobId);
-        await createCmd(
-            `unzip -o "${baseZipPath}" -d "${extractDir}"`,
-            false,
+        const dataPaths = await extractDolphinAndroidData(
+            baseZipPath,
+            extractDir,
             jobId,
         );
-        const { gcPath, wiiPath } = await ensureDolphinAndroidData(extractDir);
+        repairedZipPath = dataPaths.repairedZipPath;
+        const { gcPath, wiiPath } = dataPaths;
         await createCmd(`rm -rf "${serverInfo.dolphinGC}"`, false, jobId);
         await createCmd(`rm -rf "${serverInfo.dolphinWii}"`, false, jobId);
         await createCmd(
@@ -193,7 +308,11 @@ const pullDolphinAndroid = async (
             jobId,
         );
     } finally {
-        await safeCleanupDolphinAndroidWork(extractDir, [baseZipPath], jobId);
+        await safeCleanupDolphinAndroidWork(
+            extractDir,
+            [baseZipPath, ...(repairedZipPath ? [repairedZipPath] : [])],
+            jobId,
+        );
     }
 };
 

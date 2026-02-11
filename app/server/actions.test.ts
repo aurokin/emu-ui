@@ -14,6 +14,7 @@ const backupMocks = vi.hoisted(() => ({
 
 const fsMocks = vi.hoisted(() => ({
     stat: vi.fn(),
+    readdir: vi.fn(),
 }));
 
 vi.mock("./backup", () => ({
@@ -27,8 +28,10 @@ vi.mock("./backup", () => ({
 vi.mock("node:fs/promises", () => ({
     default: {
         stat: fsMocks.stat,
+        readdir: fsMocks.readdir,
     },
     stat: fsMocks.stat,
+    readdir: fsMocks.readdir,
 }));
 
 import * as actions from "./actions";
@@ -105,6 +108,7 @@ beforeEach(() => {
             `scp:${source}:${target}:${push ? "push" : "pull"}`,
     );
     fsMocks.stat.mockResolvedValue({ isDirectory: () => true } as Stats);
+    fsMocks.readdir.mockResolvedValue([]);
 });
 
 describe("dolphin android push", () => {
@@ -168,6 +172,36 @@ describe("dolphin android push", () => {
             `cd "${extractDir}" && zip -r "${exportZipPath}" .`,
         );
     });
+
+    it("writes updated data into nested dolphin root", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const extractDir = path.posix.join(serverInfo.workDir, "dolphin_emu");
+        const nestedRoot = path.posix.join(extractDir, "dolphin-emu");
+
+        fsMocks.stat.mockImplementation(async (targetPath: string) => {
+            if (
+                targetPath === path.posix.join(extractDir, "GC") ||
+                targetPath === path.posix.join(extractDir, "Wii")
+            ) {
+                throw new Error("ENOENT");
+            }
+            return { isDirectory: () => true } as Stats;
+        });
+        fsMocks.readdir.mockResolvedValue([
+            { name: "dolphin-emu", isDirectory: () => true },
+        ]);
+
+        await actions.push(device, Emulator.dolphin, serverInfo);
+
+        const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
+        expect(commands).toContain(
+            `cp -r "${serverInfo.dolphinGC}" "${nestedRoot}"`,
+        );
+        expect(commands).toContain(
+            `cp -r "${serverInfo.dolphinWii}" "${nestedRoot}"`,
+        );
+    });
 });
 
 describe("dolphin android pull", () => {
@@ -191,6 +225,173 @@ describe("dolphin android pull", () => {
         const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
         expect(commands.some((cmd) => cmd.includes("dolphin-export.zip"))).toBe(
             false,
+        );
+    });
+
+    it("attempts zip repair when first extraction scan fails", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const extractDir = path.posix.join(serverInfo.workDir, "dolphin_emu");
+        const baseZipPath = path.posix.join(
+            serverInfo.workDir,
+            "dolphin-emu.zip",
+        );
+        const fixedZipPath = `${baseZipPath}.fixed`;
+        let repaired = false;
+
+        backupMocks.createCmd.mockImplementation(async (cmd: string) => {
+            if (cmd === `zip -FF "${baseZipPath}" --out "${fixedZipPath}"`) {
+                repaired = true;
+            }
+            return 0;
+        });
+        fsMocks.stat.mockImplementation(async (targetPath: string) => {
+            if (!repaired) {
+                throw new Error("ENOENT");
+            }
+            if (
+                targetPath === path.posix.join(extractDir, "GC") ||
+                targetPath === path.posix.join(extractDir, "Wii")
+            ) {
+                return { isDirectory: () => true } as Stats;
+            }
+            throw new Error("ENOENT");
+        });
+        fsMocks.readdir.mockResolvedValue([]);
+
+        await actions.pull(device, Emulator.dolphin, serverInfo);
+
+        const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
+        expect(commands).toContain(
+            `zip -FF "${baseZipPath}" --out "${fixedZipPath}"`,
+        );
+        expect(commands).toContain(
+            `unzip -o "${fixedZipPath}" -d "${extractDir}"`,
+        );
+    });
+
+    it("reads GC/Wii from nested dolphin root", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const extractDir = path.posix.join(serverInfo.workDir, "dolphin_emu");
+        const nestedRoot = path.posix.join(extractDir, "dolphin-emu");
+
+        fsMocks.stat.mockImplementation(async (targetPath: string) => {
+            if (
+                targetPath === path.posix.join(extractDir, "GC") ||
+                targetPath === path.posix.join(extractDir, "Wii")
+            ) {
+                throw new Error("ENOENT");
+            }
+            return { isDirectory: () => true } as Stats;
+        });
+        fsMocks.readdir.mockResolvedValue([
+            { name: "dolphin-emu", isDirectory: () => true },
+        ]);
+
+        await actions.pull(device, Emulator.dolphin, serverInfo);
+
+        const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
+        expect(commands).toContain(
+            `mv "${nestedRoot}/GC" "${serverInfo.dolphinGC}"`,
+        );
+        expect(commands).toContain(
+            `mv "${nestedRoot}/Wii" "${serverInfo.dolphinWii}"`,
+        );
+    });
+
+    it("reads GC/Wii from deeply nested dolphin root", async () => {
+        const device = buildDevice();
+        const serverInfo = buildServer();
+        const extractDir = path.posix.join(serverInfo.workDir, "dolphin_emu");
+        const deepRoot = path.posix.join(
+            extractDir,
+            "storage/emulated/0/Android/data/org.dolphinemu.dolphinemu/files",
+        );
+
+        fsMocks.stat.mockImplementation(async (targetPath: string) => {
+            if (
+                targetPath === path.posix.join(deepRoot, "GC") ||
+                targetPath === path.posix.join(deepRoot, "Wii")
+            ) {
+                return { isDirectory: () => true } as Stats;
+            }
+            throw new Error("ENOENT");
+        });
+        fsMocks.readdir.mockImplementation(async (targetPath: string) => {
+            if (targetPath === extractDir) {
+                return [{ name: "storage", isDirectory: () => true }];
+            }
+            if (targetPath === path.posix.join(extractDir, "storage")) {
+                return [{ name: "emulated", isDirectory: () => true }];
+            }
+            if (
+                targetPath ===
+                path.posix.join(extractDir, "storage", "emulated")
+            ) {
+                return [{ name: "0", isDirectory: () => true }];
+            }
+            if (
+                targetPath ===
+                path.posix.join(extractDir, "storage", "emulated", "0")
+            ) {
+                return [{ name: "Android", isDirectory: () => true }];
+            }
+            if (
+                targetPath ===
+                path.posix.join(
+                    extractDir,
+                    "storage",
+                    "emulated",
+                    "0",
+                    "Android",
+                )
+            ) {
+                return [{ name: "data", isDirectory: () => true }];
+            }
+            if (
+                targetPath ===
+                path.posix.join(
+                    extractDir,
+                    "storage",
+                    "emulated",
+                    "0",
+                    "Android",
+                    "data",
+                )
+            ) {
+                return [
+                    {
+                        name: "org.dolphinemu.dolphinemu",
+                        isDirectory: () => true,
+                    },
+                ];
+            }
+            if (
+                targetPath ===
+                path.posix.join(
+                    extractDir,
+                    "storage",
+                    "emulated",
+                    "0",
+                    "Android",
+                    "data",
+                    "org.dolphinemu.dolphinemu",
+                )
+            ) {
+                return [{ name: "files", isDirectory: () => true }];
+            }
+            return [];
+        });
+
+        await actions.pull(device, Emulator.dolphin, serverInfo);
+
+        const commands = backupMocks.createCmd.mock.calls.map(([cmd]) => cmd);
+        expect(commands).toContain(
+            `mv "${deepRoot}/GC" "${serverInfo.dolphinGC}"`,
+        );
+        expect(commands).toContain(
+            `mv "${deepRoot}/Wii" "${serverInfo.dolphinWii}"`,
         );
     });
 });
