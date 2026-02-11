@@ -39,36 +39,61 @@ export const createCmd = async (
 ) => {
     const p = spawn("bash", ["-c", cmd]);
     let failed = false;
+    let settled = false;
     console.log(`?: ${cmd}`);
     await appendJobLog(jobId, `CMD: ${cmd}`);
 
     return new Promise((resolve, reject) => {
-        p.stdout.on("data", async (x) => {
+        const rejectOnce = (err: unknown) => {
+            if (settled) return;
+            settled = true;
+            reject(err);
+        };
+
+        const resolveOnce = (value: unknown) => {
+            if (settled) return;
+            settled = true;
+            resolve(value);
+        };
+
+        p.stdout.on("data", (x) => {
             const msg = x.toString();
             // process.stdout.write(`STDOUT: ${msg}`);
-            await appendJobLog(jobId, `STDOUT: ${msg.trimEnd()}`);
+            void appendJobLog(jobId, `STDOUT: ${msg.trimEnd()}`);
         });
-        p.stderr.on("data", async (buf) => {
+
+        p.stderr.on("data", (buf) => {
             const msg = buf.toString();
-            // process.stderr.write(`STDERR: ${msg}`);
-            await appendJobLog(jobId, `STDERR: ${msg.trimEnd()}`);
-            if (!isSftp || msg.includes("Connection closed")) {
+            const shouldFail = !isSftp || msg.includes("Connection closed");
+            if (shouldFail) {
                 failed = true;
-                reject(new Error("Failure in command"));
+            }
+
+            // process.stderr.write(`STDERR: ${msg}`);
+            void appendJobLog(jobId, `STDERR: ${msg.trimEnd()}`);
+
+            if (shouldFail) {
+                rejectOnce(new Error("Failure in command"));
             }
         });
+
         p.on("exit", (code) => {
+            const exitCode = code ?? 0;
             if (failed) {
                 console.error(`N: ${cmd}\n`);
                 void appendJobLog(
                     jobId,
                     `EXIT: ${code ?? "unknown"} (failure)`,
                 );
-                reject(code);
-            } else {
+                rejectOnce(exitCode);
+            } else if (exitCode === 0) {
                 console.log(`Y: ${cmd}\n`);
-                void appendJobLog(jobId, `EXIT: ${code ?? 0} (ok)`);
-                resolve(code);
+                void appendJobLog(jobId, `EXIT: ${exitCode} (ok)`);
+                resolveOnce(exitCode);
+            } else {
+                console.log(`~: ${cmd}\n`);
+                void appendJobLog(jobId, `EXIT: ${exitCode} (non-zero)`);
+                resolveOnce(exitCode);
             }
         });
     });
