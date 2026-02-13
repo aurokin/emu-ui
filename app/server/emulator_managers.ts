@@ -16,6 +16,8 @@ export const getManageFn = (
         return manageDolphin;
     } else if (emulator === Emulator.mupen) {
         return manageMupenFz;
+    } else if (emulator === Emulator.melonds) {
+        return manageMelonds;
     } else if (emulator === Emulator.nethersx2) {
         return manageNethersx2;
     } else if (emulator === Emulator.pcsx2) {
@@ -112,6 +114,15 @@ const manageMupenFz = (
 ): SyncPair[] => {
     if (!device.mupenFzSave) return [];
     return simpleManage(serverInfo.mupenFzSave, device.mupenFzSave, push);
+};
+
+const manageMelonds = (
+    device: EmuDevice,
+    serverInfo: EmuServer,
+    push: boolean,
+): SyncPair[] => {
+    if (!device.melonds) return [];
+    return simpleManage(serverInfo.melonds, device.melonds, push);
 };
 
 const manageNethersx2 = (

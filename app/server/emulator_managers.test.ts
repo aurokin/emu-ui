@@ -21,6 +21,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     mupenFzSave: undefined,
     nethersx2Save: undefined,
     nethersx2DroidDump: undefined,
+    melonds: undefined,
     pcsx2Save: undefined,
     ppssppSave: undefined,
     ppssppState: undefined,
@@ -47,6 +48,7 @@ const buildServer = (overrides: Partial<EmuServer> = {}): EmuServer => ({
     dolphinGC: "/srv/dolphin/GC",
     dolphinWii: "/srv/dolphin/Wii",
     nethersx2Save: "/srv/nethersx2",
+    melonds: "/srv/melonds",
     mupenFzSave: "/srv/mupen",
     ppssppSave: "/srv/ppsspp",
     ppssppState: "/srv/ppsspp/state",
@@ -109,6 +111,27 @@ describe("emulator managers", () => {
             {
                 source: serverInfo.nethersx2Save,
                 target: device.nethersx2DroidDump,
+            },
+        ]);
+    });
+
+    it("manages melonds with a single shared path", () => {
+        const device = buildDevice({
+            melonds: "/device/melonds",
+        });
+        const serverInfo = buildServer();
+        const manage = getManageFn(Emulator.melonds);
+
+        expect(manage(device, serverInfo, true)).toEqual([
+            {
+                source: serverInfo.melonds,
+                target: device.melonds,
+            },
+        ]);
+        expect(manage(device, serverInfo, false)).toEqual([
+            {
+                source: device.melonds,
+                target: serverInfo.melonds,
             },
         ]);
     });

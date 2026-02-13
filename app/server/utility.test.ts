@@ -25,6 +25,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     mupenFzSave: undefined,
     nethersx2Save: undefined,
     nethersx2DroidDump: undefined,
+    melonds: undefined,
     pcsx2Save: undefined,
     ppssppSave: undefined,
     ppssppState: undefined,
@@ -61,6 +62,7 @@ describe("convertEmuDeviceToSimpleDevice", () => {
             citraNand: "/emu/citra/nand",
             citraSdmc: "/emu/citra/sdmc",
             citraSysdata: "/emu/citra/sys",
+            melonds: "/emu/melonds",
             dolphinGC: "/emu/dolphin/GC",
             dolphinWii: "/emu/dolphin/Wii",
             pcsx2Save: "/emu/pcsx2",
@@ -75,6 +77,7 @@ describe("convertEmuDeviceToSimpleDevice", () => {
                 Emulator.cemu,
                 Emulator.citra,
                 Emulator.dolphin,
+                Emulator.melonds,
                 Emulator.pcsx2,
             ],
         });

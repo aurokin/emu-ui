@@ -5,7 +5,10 @@ import type { EmuServer } from "~/server/types";
 export async function loader() {
     const serverConfig = await getServerConfig();
     if (!serverConfig) {
-        return Response.json({ error: "Server config not found" }, { status: 404 });
+        return Response.json(
+            { error: "Server config not found" },
+            { status: 404 },
+        );
     }
     return Response.json(serverConfig);
 }

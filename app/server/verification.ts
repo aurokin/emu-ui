@@ -62,6 +62,7 @@ const isEmuServer = (server: unknown): server is EmuServer => {
         "dolphinWii" in server &&
         "mupenFzSave" in server &&
         "nethersx2Save" in server &&
+        "melonds" in server &&
         "ppssppSave" in server &&
         "ppssppState" in server &&
         "retroarchSave" in server &&
@@ -134,6 +135,7 @@ export const serverHasFolders = async (server: EmuServer) => {
             server.dolphinWii,
             server.mupenFzSave,
             server.nethersx2Save,
+            server.melonds,
             server.ppssppSave,
             server.ppssppState,
             server.retroarchSave,

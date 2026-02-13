@@ -64,6 +64,7 @@ const buildServer = (overrides: Partial<EmuServer> = {}): EmuServer => ({
     dolphinGC: "/srv/dolphin/GC",
     dolphinWii: "/srv/dolphin/Wii",
     nethersx2Save: "/srv/nethersx2",
+    melonds: "/srv/melonds",
     mupenFzSave: "/srv/mupen",
     ppssppSave: "/srv/ppsspp",
     ppssppState: "/srv/ppsspp/state",

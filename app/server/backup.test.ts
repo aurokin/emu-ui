@@ -47,6 +47,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     mupenFzSave: undefined,
     nethersx2Save: undefined,
     nethersx2DroidDump: undefined,
+    melonds: undefined,
     pcsx2Save: undefined,
     ppssppSave: undefined,
     ppssppState: undefined,

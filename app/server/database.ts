@@ -82,7 +82,10 @@ export const addDevice = async (
         (d) => (d as { name?: string }).name === device.name,
     );
     if (existingIndex !== -1) {
-        return { success: false, error: "Device with this name already exists" };
+        return {
+            success: false,
+            error: "Device with this name already exists",
+        };
     }
 
     db.devices.push(device);

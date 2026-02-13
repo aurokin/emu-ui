@@ -44,6 +44,8 @@
 - `bun run start`: serve the built server bundle (defaults to port 3000).
 - `bun run typecheck`: run React Router typegen + TypeScript.
 - `bun run format`: format the repo with Prettier.
+- `bun run format:check`: verify formatting without writing files.
+- `bun run check`: run format check, typecheck, tests, and lint.
 - Docker: `docker build -t emu-react .` then `docker run -p 3000:3000 emu-react`.
 
 ## Linting & Tests
@@ -53,6 +55,7 @@
 - Unit tests run with Vitest via `bun run test`.
 - Prefer Vitest + React Testing Library for new tests.
 - Single test file: `bunx vitest path/to/file.test.tsx`.
+- Add `bun run check` to CI to validate formatting, type checks, tests, and linting.
 
 ## Local Setup
 
@@ -150,4 +153,9 @@
 ## Contribution Hygiene
 
 - Keep changes minimal and avoid editing generated files.
-- Use `bun run health` (format, typecheck, test, lint) for all validation runs.
+- Use `bun run health` for all local validation runs (format + check).
+
+## Git hooks
+
+- Husky is configured for `pre-commit`.
+- `bun run format` runs automatically in the pre-commit hook and re-adds formatted files.

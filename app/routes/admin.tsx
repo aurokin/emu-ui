@@ -42,7 +42,10 @@ import type { EmuServer } from "~/server/types";
 export function meta(_args: Route.MetaArgs) {
     return [
         { title: "Admin - EmuSync" },
-        { name: "description", content: "Configure EmuSync server and devices" },
+        {
+            name: "description",
+            content: "Configure EmuSync server and devices",
+        },
     ];
 }
 
@@ -56,51 +59,140 @@ const serverFieldGroups: {
         title: "Nintendo",
         icon: "nintendo",
         fields: [
-            { key: "dolphinGC", label: "GameCube Saves", description: "Dolphin emulator" },
-            { key: "dolphinWii", label: "Wii Saves", description: "Dolphin emulator" },
-            { key: "citraNand", label: "3DS NAND", description: "Citra emulator" },
-            { key: "citraSdmc", label: "3DS SD Card", description: "Citra emulator" },
-            { key: "citraSysdata", label: "3DS System Data", description: "Citra emulator" },
-            { key: "cemuSave", label: "Wii U Saves", description: "Cemu emulator" },
-            { key: "switchSave", label: "Switch Saves", description: "Native backup" },
-            { key: "yuzuSave", label: "Switch Saves (Yuzu)", description: "Yuzu emulator" },
-            { key: "ryujinxSave", label: "Switch Saves (Ryujinx)", description: "Ryujinx emulator" },
-            { key: "mupenFzSave", label: "N64 Saves", description: "Mupen64Plus FZ" },
+            {
+                key: "dolphinGC",
+                label: "GameCube Saves",
+                description: "Dolphin emulator",
+            },
+            {
+                key: "dolphinWii",
+                label: "Wii Saves",
+                description: "Dolphin emulator",
+            },
+            {
+                key: "citraNand",
+                label: "3DS NAND",
+                description: "Citra emulator",
+            },
+            {
+                key: "citraSdmc",
+                label: "3DS SD Card",
+                description: "Citra emulator",
+            },
+            {
+                key: "citraSysdata",
+                label: "3DS System Data",
+                description: "Citra emulator",
+            },
+            {
+                key: "cemuSave",
+                label: "Wii U Saves",
+                description: "Cemu emulator",
+            },
+            {
+                key: "melonds",
+                label: "MelonDS Data",
+                description: "MelonDS emulator",
+            },
+            {
+                key: "switchSave",
+                label: "Switch Saves",
+                description: "Native backup",
+            },
+            {
+                key: "yuzuSave",
+                label: "Switch Saves (Yuzu)",
+                description: "Yuzu emulator",
+            },
+            {
+                key: "ryujinxSave",
+                label: "Switch Saves (Ryujinx)",
+                description: "Ryujinx emulator",
+            },
+            {
+                key: "mupenFzSave",
+                label: "N64 Saves",
+                description: "Mupen64Plus FZ",
+            },
         ],
     },
     {
         title: "Sony",
         icon: "sony",
         fields: [
-            { key: "ppssppSave", label: "PSP Saves", description: "PPSSPP emulator" },
-            { key: "ppssppState", label: "PSP States", description: "PPSSPP emulator" },
-            { key: "nethersx2Save", label: "PS2 Memory Cards", description: "NetherSX2 emulator" },
-            { key: "rpcs3Save", label: "PS3 Saves", description: "RPCS3 emulator" },
-            { key: "vita3kSave", label: "PS Vita Saves", description: "Vita3K emulator" },
+            {
+                key: "ppssppSave",
+                label: "PSP Saves",
+                description: "PPSSPP emulator",
+            },
+            {
+                key: "ppssppState",
+                label: "PSP States",
+                description: "PPSSPP emulator",
+            },
+            {
+                key: "nethersx2Save",
+                label: "PS2 Memory Cards",
+                description: "NetherSX2 emulator",
+            },
+            {
+                key: "rpcs3Save",
+                label: "PS3 Saves",
+                description: "RPCS3 emulator",
+            },
+            {
+                key: "vita3kSave",
+                label: "PS Vita Saves",
+                description: "Vita3K emulator",
+            },
         ],
     },
     {
         title: "Microsoft",
         icon: "microsoft",
         fields: [
-            { key: "xemuSave", label: "Xbox Saves", description: "xemu emulator" },
-            { key: "xeniaSave", label: "Xbox 360 Saves", description: "Xenia emulator" },
+            {
+                key: "xemuSave",
+                label: "Xbox Saves",
+                description: "xemu emulator",
+            },
+            {
+                key: "xeniaSave",
+                label: "Xbox 360 Saves",
+                description: "Xenia emulator",
+            },
         ],
     },
     {
         title: "Multi-Platform",
         icon: "multi",
         fields: [
-            { key: "retroarchSave", label: "RetroArch Saves", description: "All cores" },
-            { key: "retroarchState", label: "RetroArch States", description: "All cores" },
-            { key: "retroarchRgState", label: "RetroArch RG States", description: "Handheld devices" },
+            {
+                key: "retroarchSave",
+                label: "RetroArch Saves",
+                description: "All cores",
+            },
+            {
+                key: "retroarchState",
+                label: "RetroArch States",
+                description: "All cores",
+            },
+            {
+                key: "retroarchRgState",
+                label: "RetroArch RG States",
+                description: "Handheld devices",
+            },
         ],
     },
     {
         title: "System",
         icon: "system",
         fields: [
-            { key: "workDir", label: "Work Directory", description: "Temporary file storage" },
+            {
+                key: "workDir",
+                label: "Work Directory",
+                description: "Temporary file storage",
+            },
         ],
     },
 ];
@@ -130,6 +222,7 @@ const deviceEmulatorGroups: {
             { key: "citraSdmc", label: "3DS SD Card" },
             { key: "citraSysdata", label: "3DS System Data" },
             { key: "cemuSave", label: "Wii U Saves" },
+            { key: "melonds", label: "MelonDS Data" },
             { key: "switchSave", label: "Switch Saves" },
             { key: "yuzuSave", label: "Yuzu Saves" },
             { key: "yuzuDroid", label: "Yuzu Android" },
@@ -166,7 +259,11 @@ const deviceEmulatorGroups: {
     },
 ];
 
-const osOptions: { value: string; label: string; icon: "android" | "computer" | "console" }[] = [
+const osOptions: {
+    value: string;
+    label: string;
+    icon: "android" | "computer" | "console";
+}[] = [
     { value: "android", label: "Android", icon: "android" },
     { value: "linux", label: "Linux", icon: "computer" },
     { value: "windows", label: "Windows", icon: "computer" },
@@ -175,7 +272,13 @@ const osOptions: { value: string; label: string; icon: "android" | "computer" | 
 ];
 
 // OS icon component
-function OsIcon({ os, size = "small" }: { os: string; size?: "small" | "medium" }) {
+function OsIcon({
+    os,
+    size = "small",
+}: {
+    os: string;
+    size?: "small" | "medium";
+}) {
     const iconProps = { fontSize: size, sx: { color: "#7aa2f7" } };
     switch (os) {
         case "android":
@@ -185,7 +288,9 @@ function OsIcon({ os, size = "small" }: { os: string; size?: "small" | "medium" 
             return <ComputerIcon {...iconProps} />;
         case "muos":
         case "nx":
-            return <SportsEsportsIcon {...iconProps} sx={{ color: "#f28fad" }} />;
+            return (
+                <SportsEsportsIcon {...iconProps} sx={{ color: "#f28fad" }} />
+            );
         default:
             return <DevicesIcon {...iconProps} />;
     }
@@ -337,7 +442,10 @@ export default function Admin() {
         } catch (err) {
             setSnackbar({
                 open: true,
-                message: err instanceof Error ? err.message : "Failed to save device",
+                message:
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to save device",
                 severity: "error",
             });
         }
@@ -444,7 +552,14 @@ export default function Admin() {
             <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
                 {/* Header */}
                 <Fade in timeout={400}>
-                    <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box
+                        sx={{
+                            mb: 4,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 2,
+                        }}
+                    >
                         <IconButton
                             component={Link}
                             to="/"
@@ -494,21 +609,41 @@ export default function Admin() {
                 {/* Device Management */}
                 <Fade in timeout={500} style={{ transitionDelay: "100ms" }}>
                     <Accordion defaultExpanded sx={accordionSx}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                <DevicesIcon sx={{ color: "#4fd1c5", fontSize: "1.3rem" }} />
+                        <AccordionSummary
+                            expandIcon={
+                                <ExpandMoreIcon sx={{ color: "#7aa2f7" }} />
+                            }
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.5,
+                                }}
+                            >
+                                <DevicesIcon
+                                    sx={{
+                                        color: "#4fd1c5",
+                                        fontSize: "1.3rem",
+                                    }}
+                                />
                                 <Box>
                                     <Typography
                                         sx={{
-                                            fontFamily: '"Unbounded", sans-serif',
+                                            fontFamily:
+                                                '"Unbounded", sans-serif',
                                             fontWeight: 600,
                                             fontSize: "1.1rem",
                                         }}
                                     >
                                         Devices
                                     </Typography>
-                                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                        Manage device connections and emulator paths
+                                    <Typography
+                                        variant="caption"
+                                        sx={{ color: "text.secondary" }}
+                                    >
+                                        Manage device connections and emulator
+                                        paths
                                     </Typography>
                                 </Box>
                             </Box>
@@ -516,18 +651,83 @@ export default function Admin() {
                         <AccordionDetails>
                             {devicesLoading ? (
                                 <Box>
-                                    <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
-                                        <Skeleton variant="rounded" width={120} height={36} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                    <Box
+                                        sx={{
+                                            mb: 2,
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                        }}
+                                    >
+                                        <Skeleton
+                                            variant="rounded"
+                                            width={120}
+                                            height={36}
+                                            sx={{
+                                                bgcolor:
+                                                    "rgba(122, 162, 247, 0.1)",
+                                            }}
+                                        />
                                     </Box>
-                                    <Box sx={{ borderRadius: 2, border: "1px solid rgba(122, 162, 247, 0.2)", overflow: "hidden" }}>
+                                    <Box
+                                        sx={{
+                                            borderRadius: 2,
+                                            border: "1px solid rgba(122, 162, 247, 0.2)",
+                                            overflow: "hidden",
+                                        }}
+                                    >
                                         {[1, 2, 3].map((i) => (
-                                            <Box key={i} sx={{ display: "flex", gap: 2, p: 1.5, borderBottom: "1px solid rgba(122, 162, 247, 0.1)" }}>
-                                                <Skeleton variant="text" width={100} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
-                                                <Skeleton variant="text" width={120} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
-                                                <Skeleton variant="text" width={50} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
-                                                <Skeleton variant="text" width={70} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                            <Box
+                                                key={i}
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 2,
+                                                    p: 1.5,
+                                                    borderBottom:
+                                                        "1px solid rgba(122, 162, 247, 0.1)",
+                                                }}
+                                            >
+                                                <Skeleton
+                                                    variant="text"
+                                                    width={100}
+                                                    sx={{
+                                                        bgcolor:
+                                                            "rgba(122, 162, 247, 0.1)",
+                                                    }}
+                                                />
+                                                <Skeleton
+                                                    variant="text"
+                                                    width={120}
+                                                    sx={{
+                                                        bgcolor:
+                                                            "rgba(122, 162, 247, 0.1)",
+                                                    }}
+                                                />
+                                                <Skeleton
+                                                    variant="text"
+                                                    width={50}
+                                                    sx={{
+                                                        bgcolor:
+                                                            "rgba(122, 162, 247, 0.1)",
+                                                    }}
+                                                />
+                                                <Skeleton
+                                                    variant="text"
+                                                    width={70}
+                                                    sx={{
+                                                        bgcolor:
+                                                            "rgba(122, 162, 247, 0.1)",
+                                                    }}
+                                                />
                                                 <Box sx={{ ml: "auto" }}>
-                                                    <Skeleton variant="circular" width={28} height={28} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                    <Skeleton
+                                                        variant="circular"
+                                                        width={28}
+                                                        height={28}
+                                                        sx={{
+                                                            bgcolor:
+                                                                "rgba(122, 162, 247, 0.1)",
+                                                        }}
+                                                    />
                                                 </Box>
                                             </Box>
                                         ))}
@@ -535,7 +735,13 @@ export default function Admin() {
                                 </Box>
                             ) : (
                                 <>
-                                    <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+                                    <Box
+                                        sx={{
+                                            mb: 2,
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                        }}
+                                    >
                                         <Button
                                             variant="outlined"
                                             startIcon={<AddIcon />}
@@ -545,7 +751,8 @@ export default function Admin() {
                                                 color: "#4fd1c5",
                                                 "&:hover": {
                                                     borderColor: "#3dbdb2",
-                                                    backgroundColor: "rgba(79, 209, 197, 0.1)",
+                                                    backgroundColor:
+                                                        "rgba(79, 209, 197, 0.1)",
                                                 },
                                             }}
                                         >
@@ -560,15 +767,35 @@ export default function Admin() {
                                                 textAlign: "center",
                                                 borderRadius: 2,
                                                 border: "1px dashed rgba(122, 162, 247, 0.3)",
-                                                backgroundColor: "rgba(122, 162, 247, 0.03)",
+                                                backgroundColor:
+                                                    "rgba(122, 162, 247, 0.03)",
                                             }}
                                         >
-                                            <DevicesIcon sx={{ fontSize: 48, color: "rgba(122, 162, 247, 0.3)", mb: 2 }} />
-                                            <Typography sx={{ color: "text.secondary", mb: 1 }}>
+                                            <DevicesIcon
+                                                sx={{
+                                                    fontSize: 48,
+                                                    color: "rgba(122, 162, 247, 0.3)",
+                                                    mb: 2,
+                                                }}
+                                            />
+                                            <Typography
+                                                sx={{
+                                                    color: "text.secondary",
+                                                    mb: 1,
+                                                }}
+                                            >
                                                 No devices configured yet
                                             </Typography>
-                                            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 2 }}>
-                                                Add your first device to start syncing emulator saves
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: "text.secondary",
+                                                    display: "block",
+                                                    mb: 2,
+                                                }}
+                                            >
+                                                Add your first device to start
+                                                syncing emulator saves
                                             </Typography>
                                             <Button
                                                 variant="contained"
@@ -590,72 +817,217 @@ export default function Admin() {
                                             <Table size="small">
                                                 <TableHead>
                                                     <TableRow>
-                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                        <TableCell
+                                                            sx={{
+                                                                color: "#7aa2f7",
+                                                                fontWeight: 600,
+                                                                fontSize:
+                                                                    "0.75rem",
+                                                                letterSpacing:
+                                                                    "0.05em",
+                                                                textTransform:
+                                                                    "uppercase",
+                                                            }}
+                                                        >
                                                             Name
                                                         </TableCell>
-                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                        <TableCell
+                                                            sx={{
+                                                                color: "#7aa2f7",
+                                                                fontWeight: 600,
+                                                                fontSize:
+                                                                    "0.75rem",
+                                                                letterSpacing:
+                                                                    "0.05em",
+                                                                textTransform:
+                                                                    "uppercase",
+                                                            }}
+                                                        >
                                                             IP Address
                                                         </TableCell>
-                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                        <TableCell
+                                                            sx={{
+                                                                color: "#7aa2f7",
+                                                                fontWeight: 600,
+                                                                fontSize:
+                                                                    "0.75rem",
+                                                                letterSpacing:
+                                                                    "0.05em",
+                                                                textTransform:
+                                                                    "uppercase",
+                                                            }}
+                                                        >
                                                             Port
                                                         </TableCell>
-                                                        <TableCell sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                                                        <TableCell
+                                                            sx={{
+                                                                color: "#7aa2f7",
+                                                                fontWeight: 600,
+                                                                fontSize:
+                                                                    "0.75rem",
+                                                                letterSpacing:
+                                                                    "0.05em",
+                                                                textTransform:
+                                                                    "uppercase",
+                                                            }}
+                                                        >
                                                             Platform
                                                         </TableCell>
                                                         <TableCell
                                                             align="right"
-                                                            sx={{ color: "#7aa2f7", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase" }}
+                                                            sx={{
+                                                                color: "#7aa2f7",
+                                                                fontWeight: 600,
+                                                                fontSize:
+                                                                    "0.75rem",
+                                                                letterSpacing:
+                                                                    "0.05em",
+                                                                textTransform:
+                                                                    "uppercase",
+                                                            }}
                                                         >
                                                             Actions
                                                         </TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
-                                                    {devices.map((device, index) => (
-                                                        <Fade in timeout={300} style={{ transitionDelay: `${index * 50}ms` }} key={device.name as string}>
-                                                            <TableRow
-                                                                sx={{
-                                                                    transition: "background-color 0.15s ease",
-                                                                    "&:hover": {
-                                                                        backgroundColor: "rgba(79, 209, 197, 0.05)",
-                                                                    },
+                                                    {devices.map(
+                                                        (device, index) => (
+                                                            <Fade
+                                                                in
+                                                                timeout={300}
+                                                                style={{
+                                                                    transitionDelay: `${index * 50}ms`,
                                                                 }}
+                                                                key={
+                                                                    device.name as string
+                                                                }
                                                             >
-                                                                <TableCell sx={{ fontWeight: 500 }}>{device.name as string}</TableCell>
-                                                                <TableCell sx={{ fontFamily: "monospace", fontSize: "0.85rem", color: "text.secondary" }}>
-                                                                    {device.ip as string}
-                                                                </TableCell>
-                                                                <TableCell sx={{ color: "text.secondary" }}>{device.port as number}</TableCell>
-                                                                <TableCell>
-                                                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                                                        <OsIcon os={device.os as string} />
-                                                                        <Typography variant="body2" sx={{ textTransform: "capitalize" }}>
-                                                                            {osOptions.find(o => o.value === device.os)?.label || String(device.os)}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                </TableCell>
-                                                                <TableCell align="right">
-                                                                    <IconButton
-                                                                        size="small"
-                                                                        onClick={() => handleOpenEditDevice(device)}
-                                                                        sx={{ color: "#7aa2f7", transition: "color 0.15s ease", "&:hover": { color: "#4fd1c5" } }}
-                                                                    >
-                                                                        <EditIcon fontSize="small" />
-                                                                    </IconButton>
-                                                                    <IconButton
-                                                                        size="small"
-                                                                        onClick={() => {
-                                                                            setDeviceToDelete(device.name as string);
-                                                                            setDeleteDialogOpen(true);
+                                                                <TableRow
+                                                                    sx={{
+                                                                        transition:
+                                                                            "background-color 0.15s ease",
+                                                                        "&:hover":
+                                                                            {
+                                                                                backgroundColor:
+                                                                                    "rgba(79, 209, 197, 0.05)",
+                                                                            },
+                                                                    }}
+                                                                >
+                                                                    <TableCell
+                                                                        sx={{
+                                                                            fontWeight: 500,
                                                                         }}
-                                                                        sx={{ color: "#f28fad", transition: "opacity 0.15s ease", "&:hover": { opacity: 0.8 } }}
                                                                     >
-                                                                        <DeleteIcon fontSize="small" />
-                                                                    </IconButton>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        </Fade>
-                                                    ))}
+                                                                        {
+                                                                            device.name as string
+                                                                        }
+                                                                    </TableCell>
+                                                                    <TableCell
+                                                                        sx={{
+                                                                            fontFamily:
+                                                                                "monospace",
+                                                                            fontSize:
+                                                                                "0.85rem",
+                                                                            color: "text.secondary",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            device.ip as string
+                                                                        }
+                                                                    </TableCell>
+                                                                    <TableCell
+                                                                        sx={{
+                                                                            color: "text.secondary",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            device.port as number
+                                                                        }
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <Box
+                                                                            sx={{
+                                                                                display:
+                                                                                    "flex",
+                                                                                alignItems:
+                                                                                    "center",
+                                                                                gap: 1,
+                                                                            }}
+                                                                        >
+                                                                            <OsIcon
+                                                                                os={
+                                                                                    device.os as string
+                                                                                }
+                                                                            />
+                                                                            <Typography
+                                                                                variant="body2"
+                                                                                sx={{
+                                                                                    textTransform:
+                                                                                        "capitalize",
+                                                                                }}
+                                                                            >
+                                                                                {osOptions.find(
+                                                                                    (
+                                                                                        o,
+                                                                                    ) =>
+                                                                                        o.value ===
+                                                                                        device.os,
+                                                                                )
+                                                                                    ?.label ||
+                                                                                    String(
+                                                                                        device.os,
+                                                                                    )}
+                                                                            </Typography>
+                                                                        </Box>
+                                                                    </TableCell>
+                                                                    <TableCell align="right">
+                                                                        <IconButton
+                                                                            size="small"
+                                                                            onClick={() =>
+                                                                                handleOpenEditDevice(
+                                                                                    device,
+                                                                                )
+                                                                            }
+                                                                            sx={{
+                                                                                color: "#7aa2f7",
+                                                                                transition:
+                                                                                    "color 0.15s ease",
+                                                                                "&:hover":
+                                                                                    {
+                                                                                        color: "#4fd1c5",
+                                                                                    },
+                                                                            }}
+                                                                        >
+                                                                            <EditIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                        <IconButton
+                                                                            size="small"
+                                                                            onClick={() => {
+                                                                                setDeviceToDelete(
+                                                                                    device.name as string,
+                                                                                );
+                                                                                setDeleteDialogOpen(
+                                                                                    true,
+                                                                                );
+                                                                            }}
+                                                                            sx={{
+                                                                                color: "#f28fad",
+                                                                                transition:
+                                                                                    "opacity 0.15s ease",
+                                                                                "&:hover":
+                                                                                    {
+                                                                                        opacity: 0.8,
+                                                                                    },
+                                                                            }}
+                                                                        >
+                                                                            <DeleteIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            </Fade>
+                                                        ),
+                                                    )}
                                                 </TableBody>
                                             </Table>
                                         </Box>
@@ -669,21 +1041,41 @@ export default function Admin() {
                 {/* Server Configuration */}
                 <Fade in timeout={500} style={{ transitionDelay: "200ms" }}>
                     <Accordion sx={accordionSx}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#7aa2f7" }} />}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                <SportsEsportsIcon sx={{ color: "#f28fad", fontSize: "1.3rem" }} />
+                        <AccordionSummary
+                            expandIcon={
+                                <ExpandMoreIcon sx={{ color: "#7aa2f7" }} />
+                            }
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.5,
+                                }}
+                            >
+                                <SportsEsportsIcon
+                                    sx={{
+                                        color: "#f28fad",
+                                        fontSize: "1.3rem",
+                                    }}
+                                />
                                 <Box>
                                     <Typography
                                         sx={{
-                                            fontFamily: '"Unbounded", sans-serif',
+                                            fontFamily:
+                                                '"Unbounded", sans-serif',
                                             fontWeight: 600,
                                             fontSize: "1.1rem",
                                         }}
                                     >
                                         Server Paths
                                     </Typography>
-                                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                        Configure emulator save locations on the server
+                                    <Typography
+                                        variant="caption"
+                                        sx={{ color: "text.secondary" }}
+                                    >
+                                        Configure emulator save locations on the
+                                        server
                                     </Typography>
                                 </Box>
                             </Box>
@@ -693,10 +1085,36 @@ export default function Admin() {
                                 <Box>
                                     {[1, 2, 3].map((group) => (
                                         <Box key={group} sx={{ mb: 3 }}>
-                                            <Skeleton variant="text" width={100} height={20} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)", mb: 1.5 }} />
-                                            <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" } }}>
+                                            <Skeleton
+                                                variant="text"
+                                                width={100}
+                                                height={20}
+                                                sx={{
+                                                    bgcolor:
+                                                        "rgba(122, 162, 247, 0.1)",
+                                                    mb: 1.5,
+                                                }}
+                                            />
+                                            <Box
+                                                sx={{
+                                                    display: "grid",
+                                                    gap: 2,
+                                                    gridTemplateColumns: {
+                                                        xs: "1fr",
+                                                        md: "1fr 1fr",
+                                                    },
+                                                }}
+                                            >
                                                 {[1, 2, 3, 4].map((i) => (
-                                                    <Skeleton key={i} variant="rounded" height={56} sx={{ bgcolor: "rgba(122, 162, 247, 0.1)" }} />
+                                                    <Skeleton
+                                                        key={i}
+                                                        variant="rounded"
+                                                        height={56}
+                                                        sx={{
+                                                            bgcolor:
+                                                                "rgba(122, 162, 247, 0.1)",
+                                                        }}
+                                                    />
                                                 ))}
                                             </Box>
                                         </Box>
@@ -704,43 +1122,82 @@ export default function Admin() {
                                 </Box>
                             ) : (
                                 <>
-                                    {serverFieldGroups.map((group, groupIndex) => (
-                                        <Box key={group.title} sx={{ mb: groupIndex < serverFieldGroups.length - 1 ? 3 : 0 }}>
-                                            <Typography sx={groupHeaderSx}>
-                                                {group.title}
-                                            </Typography>
+                                    {serverFieldGroups.map(
+                                        (group, groupIndex) => (
                                             <Box
+                                                key={group.title}
                                                 sx={{
-                                                    display: "grid",
-                                                    gap: 2,
-                                                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                                                    mb:
+                                                        groupIndex <
+                                                        serverFieldGroups.length -
+                                                            1
+                                                            ? 3
+                                                            : 0,
                                                 }}
                                             >
-                                                {group.fields.map((field) => (
-                                                    <TextField
-                                                        key={field.key}
-                                                        label={field.label}
-                                                        value={(serverConfig[field.key] as string) || ""}
-                                                        onChange={(e) =>
-                                                            handleServerFieldChange(field.key, e.target.value)
-                                                        }
-                                                        helperText={field.description}
-                                                        fullWidth
-                                                        size="small"
-                                                        sx={inputSx}
-                                                    />
-                                                ))}
+                                                <Typography sx={groupHeaderSx}>
+                                                    {group.title}
+                                                </Typography>
+                                                <Box
+                                                    sx={{
+                                                        display: "grid",
+                                                        gap: 2,
+                                                        gridTemplateColumns: {
+                                                            xs: "1fr",
+                                                            md: "1fr 1fr",
+                                                        },
+                                                    }}
+                                                >
+                                                    {group.fields.map(
+                                                        (field) => (
+                                                            <TextField
+                                                                key={field.key}
+                                                                label={
+                                                                    field.label
+                                                                }
+                                                                value={
+                                                                    (serverConfig[
+                                                                        field
+                                                                            .key
+                                                                    ] as string) ||
+                                                                    ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleServerFieldChange(
+                                                                        field.key,
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                helperText={
+                                                                    field.description
+                                                                }
+                                                                fullWidth
+                                                                size="small"
+                                                                sx={inputSx}
+                                                            />
+                                                        ),
+                                                    )}
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                    ))}
-                                    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+                                        ),
+                                    )}
+                                    <Box
+                                        sx={{
+                                            mt: 3,
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                        }}
+                                    >
                                         <Button
                                             variant="contained"
                                             startIcon={<SaveIcon />}
                                             onClick={handleSaveServerConfig}
                                             disabled={serverSaving}
                                         >
-                                            {serverSaving ? "Saving..." : "Save Server Config"}
+                                            {serverSaving
+                                                ? "Saving..."
+                                                : "Save Server Config"}
                                         </Button>
                                     </Box>
                                 </>
@@ -782,7 +1239,10 @@ export default function Admin() {
                                 sx={{
                                     display: "grid",
                                     gap: 2,
-                                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                                    gridTemplateColumns: {
+                                        xs: "1fr",
+                                        sm: "1fr 1fr",
+                                    },
                                     mb: 3,
                                 }}
                             >
@@ -790,7 +1250,11 @@ export default function Admin() {
                                     <TextField
                                         key={field.key}
                                         label={field.label}
-                                        value={(deviceForm[field.key] as string | number) ?? ""}
+                                        value={
+                                            (deviceForm[field.key] as
+                                                | string
+                                                | number) ?? ""
+                                        }
                                         onChange={(e) =>
                                             handleDeviceFormChange(
                                                 field.key,
@@ -806,16 +1270,36 @@ export default function Admin() {
                                         sx={inputSx}
                                     />
                                 ))}
-                                <FormControl fullWidth size="small" sx={inputSx}>
+                                <FormControl
+                                    fullWidth
+                                    size="small"
+                                    sx={inputSx}
+                                >
                                     <InputLabel>Operating System</InputLabel>
                                     <Select
-                                        value={(deviceForm.os as string) || "linux"}
+                                        value={
+                                            (deviceForm.os as string) || "linux"
+                                        }
                                         label="Operating System"
-                                        onChange={(e) => handleDeviceFormChange("os", e.target.value)}
+                                        onChange={(e) =>
+                                            handleDeviceFormChange(
+                                                "os",
+                                                e.target.value,
+                                            )
+                                        }
                                     >
                                         {osOptions.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                            <MenuItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 1,
+                                                    }}
+                                                >
                                                     <OsIcon os={option.value} />
                                                     {option.label}
                                                 </Box>
@@ -827,7 +1311,16 @@ export default function Admin() {
 
                             {/* Grouped Emulator Paths */}
                             {deviceEmulatorGroups.map((group, groupIndex) => (
-                                <Box key={group.title} sx={{ mb: groupIndex < deviceEmulatorGroups.length - 1 ? 3 : 0 }}>
+                                <Box
+                                    key={group.title}
+                                    sx={{
+                                        mb:
+                                            groupIndex <
+                                            deviceEmulatorGroups.length - 1
+                                                ? 3
+                                                : 0,
+                                    }}
+                                >
                                     <Typography sx={groupHeaderSx}>
                                         {group.title} Paths
                                     </Typography>
@@ -835,15 +1328,27 @@ export default function Admin() {
                                         sx={{
                                             display: "grid",
                                             gap: 2,
-                                            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                                            gridTemplateColumns: {
+                                                xs: "1fr",
+                                                sm: "1fr 1fr",
+                                            },
                                         }}
                                     >
                                         {group.fields.map((field) => (
                                             <TextField
                                                 key={field.key}
                                                 label={field.label}
-                                                value={(deviceForm[field.key] as string) || ""}
-                                                onChange={(e) => handleDeviceFormChange(field.key, e.target.value)}
+                                                value={
+                                                    (deviceForm[
+                                                        field.key
+                                                    ] as string) || ""
+                                                }
+                                                onChange={(e) =>
+                                                    handleDeviceFormChange(
+                                                        field.key,
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 fullWidth
                                                 size="small"
                                                 sx={inputSx}
@@ -866,7 +1371,11 @@ export default function Admin() {
                             onClick={handleSaveDevice}
                             disabled={deviceSaving}
                         >
-                            {deviceSaving ? "Saving..." : editingDevice ? "Update" : "Add"}
+                            {deviceSaving
+                                ? "Saving..."
+                                : editingDevice
+                                  ? "Update"
+                                  : "Add"}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -890,8 +1399,8 @@ export default function Admin() {
                     </DialogTitle>
                     <DialogContent>
                         <Typography>
-                            Are you sure you want to delete "{deviceToDelete}"? This action cannot be
-                            undone.
+                            Are you sure you want to delete "{deviceToDelete}"?
+                            This action cannot be undone.
                         </Typography>
                     </DialogContent>
                     <DialogActions sx={{ px: 3, pb: 3 }}>
@@ -920,12 +1429,16 @@ export default function Admin() {
                 <Snackbar
                     open={snackbar.open}
                     autoHideDuration={4000}
-                    onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                    onClose={() =>
+                        setSnackbar((prev) => ({ ...prev, open: false }))
+                    }
                     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 >
                     <Alert
                         severity={snackbar.severity}
-                        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                        onClose={() =>
+                            setSnackbar((prev) => ({ ...prev, open: false }))
+                        }
                         sx={{
                             backgroundColor:
                                 snackbar.severity === "success"
@@ -936,7 +1449,10 @@ export default function Admin() {
                                 snackbar.severity === "success"
                                     ? "rgba(79, 209, 197, 0.4)"
                                     : "rgba(242, 143, 173, 0.4)",
-                            color: snackbar.severity === "success" ? "#4fd1c5" : "#f28fad",
+                            color:
+                                snackbar.severity === "success"
+                                    ? "#4fd1c5"
+                                    : "#f28fad",
                         }}
                     >
                         {snackbar.message}

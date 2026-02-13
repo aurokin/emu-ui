@@ -22,6 +22,7 @@ export type EmuDevice = {
     mupenFzSave: string | undefined;
     nethersx2Save: string | undefined;
     nethersx2DroidDump: string | undefined;
+    melonds: string | undefined;
     pcsx2Save: string | undefined;
     ppssppSave: string | undefined;
     ppssppState: string | undefined;
@@ -56,6 +57,7 @@ export type EmuServer = {
     rpcs3Save: string;
     ryujinxSave: string;
     switchSave: string;
+    melonds: string;
     vita3kSave: string;
     xemuSave: string;
     xeniaSave: string;
@@ -77,6 +79,7 @@ export enum Emulator {
     dolphin = "dolphin",
     mupen = "mupen",
     nethersx2 = "nethersx2",
+    melonds = "melonds",
     pcsx2 = "pcsx2",
     ppsspp = "ppsspp",
     retroarch = "retroarch",

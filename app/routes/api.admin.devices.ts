@@ -15,7 +15,15 @@ export async function action({ request }: { request: Request }) {
     const device = (await request.json()) as Record<string, unknown>;
 
     // Validate required fields
-    const requiredFields = ["name", "ip", "port", "user", "password", "os", "workDir"];
+    const requiredFields = [
+        "name",
+        "ip",
+        "port",
+        "user",
+        "password",
+        "os",
+        "workDir",
+    ];
     for (const field of requiredFields) {
         if (!device[field]) {
             return Response.json(

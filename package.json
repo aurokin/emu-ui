@@ -6,11 +6,14 @@
         "build": "bunx react-router build",
         "dev": "bunx react-router dev --host",
         "start": "bunx react-router-serve ./build/server/index.js",
-        "typecheck": "bunx react-router typegen && bunx tsc",
+        "typecheck": "bunx react-router typegen && bunx tsc --incremental --tsBuildInfoFile .cache/tsc.tsbuildinfo",
         "format": "bunx prettier . --write",
+        "format:check": "bunx prettier . --check --cache --cache-location .cache/prettier",
+        "check": "bun run format:check && bun run typecheck && bun run test && bun run lint",
         "lint": "bunx eslint .",
         "test": "bunx vitest run",
-        "health": "bun run format && bun run typecheck && bun run test && bun run lint"
+        "health": "bun run format && bun run check",
+        "prepare": "bunx husky"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
@@ -47,6 +50,7 @@
         "tailwindcss": "^4.1.18",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.27.0",
+        "husky": "^9.1.7",
         "vite": "^7.3.1",
         "vite-tsconfig-paths": "^6.0.4",
         "vitest": "^3.2.0"
