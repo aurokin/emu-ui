@@ -12,9 +12,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     os: EmuOs.linux,
     syncType: SyncType.ssh,
     cemuSave: undefined,
-    citraNand: undefined,
-    citraSdmc: undefined,
-    citraSysdata: undefined,
+    azahar: undefined,
     dolphinDroidDump: undefined,
     dolphinGC: undefined,
     dolphinWii: undefined,
@@ -42,9 +40,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
 
 const buildServer = (overrides: Partial<EmuServer> = {}): EmuServer => ({
     cemuSave: "/srv/cemu",
-    citraNand: "/srv/citra/nand",
-    citraSdmc: "/srv/citra/sdmc",
-    citraSysdata: "/srv/citra/sysdata",
+    azahar: "/srv/azahar",
     dolphinGC: "/srv/dolphin/GC",
     dolphinWii: "/srv/dolphin/Wii",
     nethersx2Save: "/srv/nethersx2",
@@ -96,6 +92,21 @@ describe("emulator managers", () => {
         const manage = getManageFn(Emulator.dolphin);
 
         expect(manage(device, serverInfo, true)).toEqual([]);
+    });
+
+    it("syncs Azahar subdirectories", () => {
+        const device = buildDevice({ azahar: "/device/Azahar" });
+        const serverInfo = buildServer();
+        const manage = getManageFn(Emulator.azahar);
+
+        expect(manage(device, serverInfo, true)).toEqual([
+            { source: "/srv/azahar/nand", target: "/device/Azahar/nand" },
+            { source: "/srv/azahar/sdmc", target: "/device/Azahar/sdmc" },
+            {
+                source: "/srv/azahar/sysdata",
+                target: "/device/Azahar/sysdata",
+            },
+        ]);
     });
 
     it("uses android dump for nethersx2 push", () => {

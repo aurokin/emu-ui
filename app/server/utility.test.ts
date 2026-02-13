@@ -16,9 +16,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     os: EmuOs.linux,
     syncType: SyncType.ssh,
     cemuSave: undefined,
-    citraNand: undefined,
-    citraSdmc: undefined,
-    citraSysdata: undefined,
+    azahar: undefined,
     dolphinDroidDump: undefined,
     dolphinGC: undefined,
     dolphinWii: undefined,
@@ -59,9 +57,7 @@ describe("convertEmuDeviceToSimpleDevice", () => {
     it("detects desktop emulators", () => {
         const device = buildDevice({
             cemuSave: "/emu/cemu",
-            citraNand: "/emu/citra/nand",
-            citraSdmc: "/emu/citra/sdmc",
-            citraSysdata: "/emu/citra/sys",
+            azahar: "/storage/emu/azahar",
             melonds: "/emu/melonds",
             dolphinGC: "/emu/dolphin/GC",
             dolphinWii: "/emu/dolphin/Wii",
@@ -75,7 +71,7 @@ describe("convertEmuDeviceToSimpleDevice", () => {
             os: device.os,
             emulatorsEnabled: [
                 Emulator.cemu,
-                Emulator.citra,
+                Emulator.azahar,
                 Emulator.dolphin,
                 Emulator.melonds,
                 Emulator.pcsx2,

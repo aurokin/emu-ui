@@ -45,9 +45,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     os: EmuOs.android,
     syncType: SyncType.ssh,
     cemuSave: undefined,
-    citraNand: undefined,
-    citraSdmc: undefined,
-    citraSysdata: undefined,
+    azahar: undefined,
     dolphinDroidDump: "/sdcard/dolphin",
     dolphinGC: undefined,
     dolphinWii: undefined,
@@ -75,9 +73,7 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
 
 const buildServer = (overrides: Partial<EmuServer> = {}): EmuServer => ({
     cemuSave: "/srv/cemu",
-    citraNand: "/srv/citra/nand",
-    citraSdmc: "/srv/citra/sdmc",
-    citraSysdata: "/srv/citra/sysdata",
+    azahar: "/srv/azahar",
     dolphinGC: "/srv/dolphin/GC",
     dolphinWii: "/srv/dolphin/Wii",
     nethersx2Save: "/srv/nethersx2",
@@ -410,7 +406,7 @@ describe("runDeviceSync", () => {
             deviceName: device.name,
             emulatorActions: [
                 { emulator: Emulator.cemu, action: SyncAction.push },
-                { emulator: Emulator.citra, action: SyncAction.pull },
+                { emulator: Emulator.azahar, action: SyncAction.pull },
                 { emulator: Emulator.dolphin, action: SyncAction.ignore },
             ],
         };
@@ -418,7 +414,7 @@ describe("runDeviceSync", () => {
 
         expect(logs).toEqual([
             `push:${Emulator.cemu}`,
-            `pull:${Emulator.citra}`,
+            `pull:${Emulator.azahar}`,
             `ignore:${Emulator.dolphin}`,
         ]);
         expect(backupMocks.pushPairs).toHaveBeenCalledWith(

@@ -12,12 +12,7 @@ export const convertEmuDeviceToSimpleDevice = (
 
     if (has(device.cemuSave)) emulatorsEnabled.push(Emulator.cemu);
 
-    if (
-        has(device.citraNand) &&
-        has(device.citraSdmc) &&
-        has(device.citraSysdata)
-    )
-        emulatorsEnabled.push(Emulator.citra);
+    if (has(device.azahar)) emulatorsEnabled.push(Emulator.azahar);
 
     const dolphinDesktop =
         device.os !== EmuOs.android &&

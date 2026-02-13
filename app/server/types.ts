@@ -13,9 +13,7 @@ export type EmuDevice = {
     os: EmuOs;
     syncType: SyncType;
     cemuSave: string | undefined;
-    citraNand: string | undefined;
-    citraSdmc: string | undefined;
-    citraSysdata: string | undefined;
+    azahar: string | undefined;
     dolphinDroidDump: string | undefined;
     dolphinGC: string | undefined;
     dolphinWii: string | undefined;
@@ -42,9 +40,7 @@ export type EmuDevice = {
 
 export type EmuServer = {
     cemuSave: string;
-    citraNand: string;
-    citraSdmc: string;
-    citraSysdata: string;
+    azahar: string;
     dolphinGC: string;
     dolphinWii: string;
     nethersx2Save: string;
@@ -75,7 +71,7 @@ export enum EmuOs {
 
 export enum Emulator {
     cemu = "cemu",
-    citra = "citra",
+    azahar = "azahar",
     dolphin = "dolphin",
     mupen = "mupen",
     nethersx2 = "nethersx2",

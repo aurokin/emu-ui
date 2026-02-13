@@ -55,9 +55,7 @@ const isEmuServer = (server: unknown): server is EmuServer => {
         server !== null &&
         typeof server === "object" &&
         "cemuSave" in server &&
-        "citraNand" in server &&
-        "citraSdmc" in server &&
-        "citraSysdata" in server &&
+        "azahar" in server &&
         "dolphinGC" in server &&
         "dolphinWii" in server &&
         "mupenFzSave" in server &&
@@ -128,9 +126,7 @@ export const serverHasFolders = async (server: EmuServer) => {
     try {
         const paths = [
             server.cemuSave,
-            server.citraNand,
-            server.citraSdmc,
-            server.citraSysdata,
+            server.azahar,
             server.dolphinGC,
             server.dolphinWii,
             server.mupenFzSave,

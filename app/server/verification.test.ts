@@ -58,9 +58,7 @@ const buildDeviceInput = (
 
 const buildServer = (overrides: Partial<EmuServer> = {}): EmuServer => ({
     cemuSave: "/srv/cemu",
-    citraNand: "/srv/citra/nand",
-    citraSdmc: "/srv/citra/sdmc",
-    citraSysdata: "/srv/citra/sysdata",
+    azahar: "/srv/azahar",
     dolphinGC: "/srv/dolphin/GC",
     dolphinWii: "/srv/dolphin/Wii",
     nethersx2Save: "/srv/nethersx2",

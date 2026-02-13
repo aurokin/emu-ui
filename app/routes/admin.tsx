@@ -70,19 +70,9 @@ const serverFieldGroups: {
                 description: "Dolphin emulator",
             },
             {
-                key: "citraNand",
-                label: "3DS NAND",
-                description: "Citra emulator",
-            },
-            {
-                key: "citraSdmc",
-                label: "3DS SD Card",
-                description: "Citra emulator",
-            },
-            {
-                key: "citraSysdata",
-                label: "3DS System Data",
-                description: "Citra emulator",
+                key: "azahar",
+                label: "3DS Saves",
+                description: "Azahar emulator",
             },
             {
                 key: "cemuSave",
@@ -218,9 +208,7 @@ const deviceEmulatorGroups: {
             { key: "dolphinGC", label: "GameCube Saves" },
             { key: "dolphinWii", label: "Wii Saves" },
             { key: "dolphinDroidDump", label: "Dolphin Android Dump" },
-            { key: "citraNand", label: "3DS NAND" },
-            { key: "citraSdmc", label: "3DS SD Card" },
-            { key: "citraSysdata", label: "3DS System Data" },
+            { key: "azahar", label: "3DS Saves" },
             { key: "cemuSave", label: "Wii U Saves" },
             { key: "melonds", label: "MelonDS Data" },
             { key: "switchSave", label: "Switch Saves" },

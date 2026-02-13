@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { EmuDevice, EmuServer, SyncPair } from "./types";
 import { EmuOs, Emulator } from "./types";
 
@@ -10,8 +11,8 @@ export const getManageFn = (
 ) => SyncPair[]) => {
     if (emulator === Emulator.cemu) {
         return manageCemu;
-    } else if (emulator === Emulator.citra) {
-        return manageCitra;
+    } else if (emulator === Emulator.azahar) {
+        return manageAzahar;
     } else if (emulator === Emulator.dolphin) {
         return manageDolphin;
     } else if (emulator === Emulator.mupen) {
@@ -66,24 +67,23 @@ const manageCemu = (
     return simpleManage(serverInfo.cemuSave, device.cemuSave, push);
 };
 
-const manageCitra = (
+const manageAzahar = (
     device: EmuDevice,
     serverInfo: EmuServer,
     push: boolean,
 ): SyncPair[] => {
+    if (!device.azahar) return [];
+
     const pairs: SyncPair[] = [];
-    if (device.citraNand)
+    for (const folder of ["nand", "sdmc", "sysdata"]) {
         pairs.push(
-            ...simpleManage(serverInfo.citraNand, device.citraNand, push),
+            ...simpleManage(
+                path.posix.join(serverInfo.azahar, folder),
+                path.posix.join(device.azahar, folder),
+                push,
+            ),
         );
-    if (device.citraSdmc)
-        pairs.push(
-            ...simpleManage(serverInfo.citraSdmc, device.citraSdmc, push),
-        );
-    if (device.citraSysdata)
-        pairs.push(
-            ...simpleManage(serverInfo.citraSysdata, device.citraSysdata, push),
-        );
+    }
     return pairs;
 };
 
