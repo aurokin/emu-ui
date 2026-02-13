@@ -18,7 +18,6 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     dolphinWii: undefined,
     mupenFzSave: undefined,
     nethersx2Save: undefined,
-    nethersx2DroidDump: undefined,
     melonds: undefined,
     pcsx2Save: undefined,
     ppssppSave: undefined,
@@ -109,19 +108,25 @@ describe("emulator managers", () => {
         ]);
     });
 
-    it("uses android dump for nethersx2 push", () => {
+    it("syncs nethersx2 memcards on both push and pull", () => {
         const device = buildDevice({
             os: EmuOs.android,
             nethersx2Save: "/sdcard/nethersx2",
-            nethersx2DroidDump: "/sdcard/nethersx2/dump",
         });
         const serverInfo = buildServer();
         const manage = getManageFn(Emulator.nethersx2);
 
         expect(manage(device, serverInfo, true)).toEqual([
             {
-                source: serverInfo.nethersx2Save,
-                target: device.nethersx2DroidDump,
+                source: `${serverInfo.nethersx2Save}/memcards`,
+                target: `${device.nethersx2Save}/memcards`,
+            },
+        ]);
+
+        expect(manage(device, serverInfo, false)).toEqual([
+            {
+                source: `${device.nethersx2Save}/memcards`,
+                target: `${serverInfo.nethersx2Save}/memcards`,
             },
         ]);
     });

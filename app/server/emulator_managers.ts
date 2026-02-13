@@ -58,6 +58,12 @@ const simpleManage = (
         },
     ];
 };
+
+const getNetherSX2MemcardsPath = (basePath: string) =>
+    path.posix.basename(basePath) === "memcards"
+        ? basePath
+        : path.posix.join(basePath, "memcards");
+
 const manageCemu = (
     device: EmuDevice,
     serverInfo: EmuServer,
@@ -130,14 +136,16 @@ const manageNethersx2 = (
     serverInfo: EmuServer,
     push: boolean,
 ): SyncPair[] => {
-    if (push && !device.nethersx2DroidDump) return [];
-    if (!push && !device.nethersx2Save) return [];
+    if (!device.nethersx2Save) return [];
+    const deviceMemcardsPath = getNetherSX2MemcardsPath(device.nethersx2Save);
+    const serverMemcardsPath = getNetherSX2MemcardsPath(
+        serverInfo.nethersx2Save,
+    );
+
     return [
         {
-            source: push ? serverInfo.nethersx2Save : device.nethersx2Save!,
-            target: push
-                ? device.nethersx2DroidDump!
-                : serverInfo.nethersx2Save,
+            source: push ? serverMemcardsPath : deviceMemcardsPath,
+            target: push ? deviceMemcardsPath : serverMemcardsPath,
         },
     ];
 };

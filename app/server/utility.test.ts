@@ -22,7 +22,6 @@ const buildDevice = (overrides: Partial<EmuDevice> = {}): EmuDevice => ({
     dolphinWii: undefined,
     mupenFzSave: undefined,
     nethersx2Save: undefined,
-    nethersx2DroidDump: undefined,
     melonds: undefined,
     pcsx2Save: undefined,
     ppssppSave: undefined,
@@ -84,7 +83,6 @@ describe("convertEmuDeviceToSimpleDevice", () => {
             os: EmuOs.android,
             dolphinDroidDump: "/sdcard/dolphin",
             nethersx2Save: "/sdcard/nethersx2",
-            nethersx2DroidDump: "/sdcard/nethersx2/dump",
             yuzuDroid: "/sdcard/yuzu",
             yuzuDroidDump: "/sdcard/yuzu/dump",
         });

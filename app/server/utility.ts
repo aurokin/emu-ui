@@ -25,9 +25,7 @@ export const convertEmuDeviceToSimpleDevice = (
 
     if (has(device.mupenFzSave)) emulatorsEnabled.push(Emulator.mupen);
 
-    const nethersx2Ok =
-        has(device.nethersx2Save) &&
-        (device.os !== EmuOs.android || has(device.nethersx2DroidDump));
+    const nethersx2Ok = has(device.nethersx2Save);
     if (nethersx2Ok) emulatorsEnabled.push(Emulator.nethersx2);
 
     if (has(device.melonds)) emulatorsEnabled.push(Emulator.melonds);

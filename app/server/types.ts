@@ -19,7 +19,6 @@ export type EmuDevice = {
     dolphinWii: string | undefined;
     mupenFzSave: string | undefined;
     nethersx2Save: string | undefined;
-    nethersx2DroidDump: string | undefined;
     melonds: string | undefined;
     pcsx2Save: string | undefined;
     ppssppSave: string | undefined;

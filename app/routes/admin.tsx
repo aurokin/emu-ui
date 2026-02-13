@@ -224,8 +224,10 @@ const deviceEmulatorGroups: {
         fields: [
             { key: "ppssppSave", label: "PSP Saves" },
             { key: "ppssppState", label: "PSP States" },
-            { key: "nethersx2Save", label: "PS2 Memory Cards" },
-            { key: "nethersx2DroidDump", label: "NetherSX2 Android Dump" },
+            {
+                key: "nethersx2Save",
+                label: "PS2 Memory Cards (memcards)",
+            },
             { key: "pcsx2Save", label: "PCSX2 Saves" },
             { key: "rpcs3Save", label: "PS3 Saves" },
             { key: "vita3kSave", label: "PS Vita Saves" },
@@ -285,6 +287,12 @@ function OsIcon({
 }
 
 type DeviceData = Record<string, unknown>;
+
+const sanitizeDevicePayload = (device: DeviceData): DeviceData => {
+    const sanitized = { ...device };
+    delete (sanitized as Record<string, unknown>).nethersx2DroidDump;
+    return sanitized;
+};
 
 export default function Admin() {
     // Server config state
@@ -390,7 +398,7 @@ export default function Admin() {
 
     const handleOpenEditDevice = (device: DeviceData) => {
         setEditingDevice(device);
-        setDeviceForm({ ...device });
+        setDeviceForm(sanitizeDevicePayload(device));
         setDeviceDialogOpen(true);
     };
 
@@ -410,7 +418,7 @@ export default function Admin() {
             const res = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(deviceForm),
+                body: JSON.stringify(sanitizeDevicePayload(deviceForm)),
             });
 
             if (res.ok) {
